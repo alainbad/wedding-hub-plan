@@ -9,6 +9,12 @@ import {
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
+import "@fontsource/cormorant-garamond/400.css";
+import "@fontsource/cormorant-garamond/500.css";
+import "@fontsource/cormorant-garamond/600.css";
+import "@fontsource/figtree/400.css";
+import "@fontsource/figtree/500.css";
+import "@fontsource/figtree/600.css";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
@@ -77,14 +83,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "WeddingHub Lebanon — Find & Book Trusted Wedding Suppliers" },
+      { name: "description", content: "Discover Lebanon's finest wedding venues, photographers, florists, caterers and more. Browse verified suppliers and plan your day with confidence." },
+      { name: "author", content: "WeddingHub Lebanon" },
+      { property: "og:title", content: "WeddingHub Lebanon — Find & Book Trusted Wedding Suppliers" },
+      { property: "og:description", content: "Discover Lebanon's finest wedding venues, photographers, florists, caterers and more." },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:site", content: "@WeddingHubLB" },
     ],
     links: [
       {

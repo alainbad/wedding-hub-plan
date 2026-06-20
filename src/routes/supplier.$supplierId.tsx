@@ -46,31 +46,12 @@ function SupplierNotFound() {
   );
 }
 
-function SupplierError({ reset }: { error: Error; reset: () => void }) {
-  const router = useRouter();
-  return (
-    <div className="min-h-screen bg-background">
-      <SiteHeader />
-      <div className="mx-auto max-w-md px-4 py-32 text-center">
-        <h1 className="font-serif text-2xl font-semibold text-foreground">Something went wrong</h1>
-        <button
-          type="button"
-          onClick={() => {
-            router.invalidate();
-            reset();
-          }}
-          className="mt-6 inline-flex rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground"
-        >
-          Try again
-        </button>
-      </div>
-      <SiteFooter />
-    </div>
-  );
-}
-
 function SupplierDetail() {
-  const { supplier } = Route.useLoaderData();
+  const { supplierId } = Route.useParams();
+  const supplier = getSupplier(supplierId);
+
+  if (!supplier) return <SupplierNotFound />;
+
   const related = suppliers
     .filter((s) => s.category === supplier.category && s.id !== supplier.id)
     .slice(0, 3);

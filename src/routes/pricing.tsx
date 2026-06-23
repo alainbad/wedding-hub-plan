@@ -22,7 +22,7 @@ export const Route = createFileRoute("/pricing")({
 const plans = [
   {
     tier: "Featured",
-    price: 29,
+    price: 10,
     blurb: "Get discovered in your category.",
     highlight: false,
     features: [
@@ -35,7 +35,7 @@ const plans = [
   },
   {
     tier: "Premium",
-    price: 79,
+    price: 35,
     blurb: "Stand out and win more leads.",
     highlight: true,
     features: [
@@ -49,7 +49,7 @@ const plans = [
   },
   {
     tier: "Elite",
-    price: 199,
+    price: 50,
     blurb: "Maximum reach and prestige.",
     highlight: false,
     features: [

@@ -44,7 +44,7 @@ export const PLANS: {
 }[] = [
   {
     key: "Featured",
-    price: 29,
+    price: 10,
     blurb: "Stand out in category listings",
     portfolioLimit: "10 photos · 1 video",
     features: [
@@ -56,7 +56,7 @@ export const PLANS: {
   },
   {
     key: "Premium",
-    price: 79,
+    price: 35,
     blurb: "Priority placement & richer profile",
     portfolioLimit: "30 photos · 5 videos",
     features: [
@@ -69,7 +69,7 @@ export const PLANS: {
   },
   {
     key: "Elite",
-    price: 199,
+    price: 50,
     blurb: "Top of search, homepage features & badge",
     portfolioLimit: "Unlimited photos & videos",
     features: [

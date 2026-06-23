@@ -51,6 +51,10 @@ import { cn } from "@/lib/utils";
 import { getCreative, creatives, type Creative } from "@/data/creatives";
 import { supabase } from "@/integrations/supabase/client";
 import { adaptCreative } from "@/lib/creative-adapter";
+import {
+  QUOTE_FIELDS_BY_CATEGORY,
+  type QuoteField,
+} from "@/lib/creative-constants";
 
 // Deterministically derive "unavailable" days for a creative so the calendar
 // shows a stable set of booked dates without a backend.
@@ -95,15 +99,6 @@ function creativeWhatsAppLink(creative: Creative) {
 }
 
 
-const cuisineOptions = [
-  "Lebanese",
-  "International",
-  "Italian",
-  "Fusion",
-  "Mexican",
-  "Mediterranean",
-  "French",
-];
 
 export const Route = createFileRoute("/creative/$creativeId")({
   head: () => ({
@@ -204,18 +199,25 @@ function CreativeDetail() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [location, setLocation] = useState("");
-  const [guests, setGuests] = useState("");
-  const [venueType, setVenueType] = useState("");
-  const [selectedCuisines, setSelectedCuisines] = useState<string[]>([]);
   const [weddingDate, setWeddingDate] = useState<Date>();
   const [notes, setNotes] = useState("");
   const [sending, setSending] = useState(false);
 
-  const toggleCuisine = (option: string) => {
-    setSelectedCuisines((prev) =>
-      prev.includes(option) ? prev.filter((c) => c !== option) : [...prev, option],
-    );
-  };
+  // Category-specific answers, keyed by field key.
+  const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
+
+  const setAnswer = (key: string, value: string | string[]) =>
+    setAnswers((prev) => ({ ...prev, [key]: value }));
+
+  const toggleMultiAnswer = (key: string, option: string) =>
+    setAnswers((prev) => {
+      const current = Array.isArray(prev[key]) ? (prev[key] as string[]) : [];
+      const next = current.includes(option)
+        ? current.filter((c) => c !== option)
+        : [...current, option];
+      return { ...prev, [key]: next };
+    });
+
 
   if (!staticCreative && isUuid && dbLoading) {
     return (
@@ -235,6 +237,25 @@ function CreativeDetail() {
     .filter((s) => s.category === creative.category && s.id !== creative.id)
     .slice(0, 3);
 
+  const quoteFields: QuoteField[] = QUOTE_FIELDS_BY_CATEGORY[creative.category] ?? [];
+
+  const formatAnswer = (field: QuoteField): string => {
+    const value = answers[field.key];
+    if (Array.isArray(value)) return value.length ? value.join(", ") : "—";
+    if (field.type === "boolean") return value === "yes" ? "Yes" : value === "no" ? "No" : "—";
+    return value ? String(value) : "—";
+  };
+
+  // Pull a numeric guest count out of a "guests" field if the category has one.
+  const guestCountValue = (): number | null => {
+    const field = quoteFields.find((f) => f.key === "guests");
+    if (!field) return null;
+    const raw = answers.guests;
+    if (typeof raw !== "string" || !raw) return null;
+    const parsed = parseInt(raw, 10);
+    return Number.isNaN(parsed) ? null : parsed;
+  };
+
   const submitQuote = async () => {
     // For real (database-backed) creatives, store the inquiry as a lead so it
     // appears in the creative's dashboard inbox.
@@ -242,8 +263,7 @@ function CreativeDetail() {
       setSending(true);
       const messageText = [
         notes,
-        venueType ? `Venue type: ${venueType}` : "",
-        selectedCuisines.length ? `Cuisine: ${selectedCuisines.join(", ")}` : "",
+        ...quoteFields.map((f) => `${f.label}: ${formatAnswer(f)}`),
       ]
         .filter(Boolean)
         .join("\n");
@@ -253,7 +273,7 @@ function CreativeDetail() {
         email,
         phone,
         location,
-        guest_count: guests ? parseInt(guests, 10) || null : null,
+        guest_count: guestCountValue(),
         budget: "",
         message: messageText,
         event_date: weddingDate ? format(weddingDate, "yyyy-MM-dd") : null,
@@ -278,9 +298,7 @@ function CreativeDetail() {
       `• Email: ${email || "—"}`,
       `• Phone: ${phone || "—"}`,
       `• Location: ${location || "—"}`,
-      `• Number of guests: ${guests || "—"}`,
-      `• Venue type: ${venueType || "—"}`,
-      `• Catering cuisine: ${selectedCuisines.length ? selectedCuisines.join(", ") : "—"}`,
+      ...quoteFields.map((f) => `• ${f.label}: ${formatAnswer(f)}`),
       `• Wedding date: ${weddingDate ? format(weddingDate, "PPP") : "—"}`,
       "",
       "Additional notes:",
@@ -295,6 +313,149 @@ function CreativeDetail() {
     window.location.href = mailto;
     setQuoteOpen(false);
   };
+
+  const renderQuoteField = (field: QuoteField) => {
+    const value = answers[field.key];
+
+    if (field.type === "select") {
+      return (
+        <>
+          <Label>{field.label}</Label>
+          <Select
+            value={typeof value === "string" ? value : ""}
+            onValueChange={(v) => setAnswer(field.key, v)}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder={field.placeholder ?? "Select"} />
+            </SelectTrigger>
+            <SelectContent>
+              {(field.options ?? []).map((option) => (
+                <SelectItem key={option} value={option}>
+                  {option}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </>
+      );
+    }
+
+    if (field.type === "multiselect") {
+      const selected = Array.isArray(value) ? value : [];
+      return (
+        <>
+          <Label>{field.label}</Label>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "w-full justify-start text-left font-normal",
+                  selected.length === 0 && "text-muted-foreground",
+                )}
+              >
+                {selected.length === 0
+                  ? (field.placeholder ?? "Select")
+                  : selected.length === 1
+                    ? selected[0]
+                    : `${selected[0]} +${selected.length - 1} more`}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-56 p-0" align="start">
+              <ScrollArea className="h-56 p-2">
+                <div className="space-y-1">
+                  {(field.options ?? []).map((option) => (
+                    <label
+                      key={option}
+                      className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
+                    >
+                      <Checkbox
+                        checked={selected.includes(option)}
+                        onCheckedChange={() => toggleMultiAnswer(field.key, option)}
+                      />
+                      <span>{option}</span>
+                    </label>
+                  ))}
+                </div>
+              </ScrollArea>
+            </PopoverContent>
+          </Popover>
+        </>
+      );
+    }
+
+    if (field.type === "boolean") {
+      return (
+        <>
+          <Label>{field.label}</Label>
+          <Select
+            value={typeof value === "string" ? value : ""}
+            onValueChange={(v) => setAnswer(field.key, v)}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="yes">Yes</SelectItem>
+              <SelectItem value="no">No</SelectItem>
+            </SelectContent>
+          </Select>
+        </>
+      );
+    }
+
+    if (field.type === "date") {
+      const dateValue =
+        typeof value === "string" && value ? new Date(value) : undefined;
+      return (
+        <>
+          <Label>{field.label}</Label>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "w-full justify-start text-left font-normal",
+                  !dateValue && "text-muted-foreground",
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {dateValue ? format(dateValue, "PPP") : <span>Pick a date</span>}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={dateValue}
+                onSelect={(d) =>
+                  setAnswer(field.key, d ? format(d, "yyyy-MM-dd") : "")
+                }
+                initialFocus
+                className="pointer-events-auto"
+              />
+            </PopoverContent>
+          </Popover>
+        </>
+      );
+    }
+
+    // text / number
+    return (
+      <>
+        <Label htmlFor={`quote-${field.key}`}>{field.label}</Label>
+        <Input
+          id={`quote-${field.key}`}
+          type={field.type === "number" ? "number" : "text"}
+          value={typeof value === "string" ? value : ""}
+          onChange={(e) => setAnswer(field.key, e.target.value)}
+          placeholder={field.placeholder}
+        />
+      </>
+    );
+  };
+
+
+
 
   const submitReview = async () => {
     if (!dbId) return;
@@ -613,36 +774,6 @@ function CreativeDetail() {
                 </Select>
               </div>
               <div className="space-y-1.5">
-                <Label>Number of guests</Label>
-                <Select value={guests} onValueChange={setGuests}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Guest count" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="50-100">50 — 100</SelectItem>
-                    <SelectItem value="100-150">100 — 150</SelectItem>
-                    <SelectItem value="150-250">150 — 250</SelectItem>
-                    <SelectItem value="250+">250+</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-1.5">
-                <Label>Venue type</Label>
-                <Select value={venueType} onValueChange={setVenueType}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Indoor or outdoor" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Indoor Venue">Indoor Venue</SelectItem>
-                    <SelectItem value="Outdoor Venue">Outdoor Venue</SelectItem>
-                    <SelectItem value="Indoor & Outdoor">Indoor &amp; Outdoor</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-1.5">
                 <Label>Wedding date</Label>
                 <Popover>
                   <PopoverTrigger asChild>
@@ -670,44 +801,17 @@ function CreativeDetail() {
               </div>
             </div>
 
-            <div className="space-y-1.5">
-              <Label>Catering cuisine</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      selectedCuisines.length === 0 && "text-muted-foreground",
-                    )}
-                  >
-                    {selectedCuisines.length === 0
-                      ? "Select cuisines"
-                      : selectedCuisines.length === 1
-                        ? selectedCuisines[0]
-                        : `${selectedCuisines[0]} +${selectedCuisines.length - 1} more`}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-56 p-0" align="start">
-                  <ScrollArea className="h-56 p-2">
-                    <div className="space-y-1">
-                      {cuisineOptions.map((option) => (
-                        <label
-                          key={option}
-                          className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
-                        >
-                          <Checkbox
-                            checked={selectedCuisines.includes(option)}
-                            onCheckedChange={() => toggleCuisine(option)}
-                          />
-                          <span>{option}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </ScrollArea>
-                </PopoverContent>
-              </Popover>
-            </div>
+            {/* Category-specific questions */}
+            {quoteFields.length > 0 && (
+              <div className="grid gap-4 sm:grid-cols-2">
+                {quoteFields.map((field) => (
+                  <div key={field.key} className="space-y-1.5">
+                    {renderQuoteField(field)}
+                  </div>
+                ))}
+              </div>
+            )}
+
 
             <div className="space-y-1.5">
               <Label htmlFor="quote-notes">Additional notes</Label>

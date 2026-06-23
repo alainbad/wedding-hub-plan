@@ -46,7 +46,7 @@ export function SiteHeader() {
             to="/auth"
             className="rounded-full bg-primary px-5 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            List your business
+            NewlyWeds log in
           </Link>
         </nav>
 
@@ -92,7 +92,7 @@ export function SiteHeader() {
             onClick={() => setOpen(false)}
             className="mt-1 rounded-full bg-primary px-4 py-2.5 text-center text-sm font-medium text-primary-foreground"
           >
-            List your business
+            NewlyWeds log in
           </Link>
         </nav>
       </div>

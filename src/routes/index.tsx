@@ -64,7 +64,7 @@ function Home() {
             Lebanon's wedding directory
           </span>
           <h1 className="mt-6 max-w-3xl font-serif text-4xl font-semibold leading-tight text-background sm:text-5xl md:text-6xl">
-            Every supplier for your perfect day, in one place
+            Everything you need for your perfect day
           </h1>
           <p className="mt-5 max-w-xl text-base leading-relaxed text-background/85 sm:text-lg">
             From cliff-top venues in Batroun to Beirut's finest photographers — discover and book

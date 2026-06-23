@@ -242,7 +242,6 @@ function Home() {
             </div>
           </div>
 
-
           <div className="mt-6 flex items-center justify-end">
             <Link
               to="/suppliers"

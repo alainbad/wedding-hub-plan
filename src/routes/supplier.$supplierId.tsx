@@ -149,6 +149,37 @@ function SupplierDetail() {
 
   const supplier = staticSupplier ?? (dbRow ? adaptSupplier(dbRow) : undefined);
   const dbId = staticSupplier ? null : (dbRow?.id ?? null);
+  const queryClient = useQueryClient();
+
+  // Count a profile view once per visit for real (database-backed) suppliers.
+  useEffect(() => {
+    if (!dbId) return;
+    void supabase.rpc("increment_profile_views", { _supplier_id: dbId });
+  }, [dbId]);
+
+  // Reviews for real suppliers
+  const { data: reviews = [] } = useQuery({
+    queryKey: ["supplier-reviews", dbId],
+    enabled: !!dbId,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("reviews")
+        .select("id, customer_name, rating, review, reply, created_at")
+        .eq("supplier_id", dbId!)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  // Write-a-review dialog state
+  const [reviewOpen, setReviewOpen] = useState(false);
+  const [reviewerName, setReviewerName] = useState("");
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewText, setReviewText] = useState("");
+  const [submittingReview, setSubmittingReview] = useState(false);
+
+
 
   const unavailableDates = useMemo(
     () => getUnavailableDates(supplierId),

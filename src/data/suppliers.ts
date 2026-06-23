@@ -18,8 +18,8 @@ export const categoryImages = {
   entertainment: entertainmentImg,
   beauty: beautyImg,
   cake: cakeImg,
-  carRentals: venueImg,
-  travelAccommodation: heroImg,
+  carRentals: carRentalsImg,
+  travelAccommodation: travelAccommodationImg,
   eventPlanners: cateringImg,
   receptionOrganizers: entertainmentImg,
 };

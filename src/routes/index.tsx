@@ -123,15 +123,45 @@ function Home() {
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0">
-          <img
-            src={categoryImages.hero}
-            alt="Elegant wedding reception in Lebanon at golden hour"
-            width={1600}
-            height={1200}
-            className="h-full w-full object-cover"
-          />
+          {promoSlides.map((slide, i) => (
+            <img
+              key={slide.id}
+              src={slide.image}
+              alt={`Featured supplier — ${slide.name}`}
+              width={1600}
+              height={1200}
+              className={cn(
+                "absolute inset-0 h-full w-full object-cover transition-opacity duration-1000",
+                i === activeSlide ? "opacity-100" : "opacity-0"
+              )}
+            />
+          ))}
           <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/40 to-foreground/30" />
         </div>
+
+        {/* Featured promotion card — rotating top supplier */}
+        <Link
+          to="/supplier/$supplierId"
+          params={{ supplierId: promoSlides[activeSlide]?.id ?? "" }}
+          className="absolute right-4 top-4 z-20 hidden max-w-[16rem] items-center gap-3 rounded-2xl border border-background/20 bg-foreground/40 p-3 backdrop-blur-md transition-transform hover:scale-105 sm:flex"
+        >
+          <img
+            src={promoSlides[activeSlide]?.image}
+            alt={promoSlides[activeSlide]?.name}
+            className="h-12 w-12 shrink-0 rounded-xl object-cover"
+          />
+          <div className="min-w-0">
+            <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.15em] text-accent">
+              <Sparkles className="h-3 w-3" /> Featured
+            </span>
+            <p className="truncate text-sm font-semibold text-background">
+              {promoSlides[activeSlide]?.name}
+            </p>
+            <p className="truncate text-xs text-background/75">
+              {promoSlides[activeSlide]?.categoryLabel}
+            </p>
+          </div>
+        </Link>
 
         <div className="relative mx-auto flex max-w-6xl flex-col items-center px-4 py-28 text-center sm:px-6 md:py-40">
           <span className="rounded-full border border-background/30 bg-background/10 px-4 py-1.5 text-xs font-medium uppercase tracking-[0.2em] text-background backdrop-blur-sm">
@@ -163,8 +193,25 @@ function Home() {
             <span className="inline-flex items-center gap-1.5"><BadgeCheck className="h-4 w-4" /> 300+ verified suppliers</span>
             <span className="inline-flex items-center gap-1.5"><Star className="h-4 w-4 fill-accent text-accent" /> 4.8 average rating</span>
           </div>
+
+          {/* Slide indicators */}
+          <div className="mt-8 flex items-center gap-2">
+            {promoSlides.map((slide, i) => (
+              <button
+                key={slide.id}
+                type="button"
+                aria-label={`Show ${slide.name}`}
+                onClick={() => setActiveSlide(i)}
+                className={cn(
+                  "h-1.5 rounded-full transition-all",
+                  i === activeSlide ? "w-6 bg-background" : "w-2 bg-background/50 hover:bg-background/70"
+                )}
+              />
+            ))}
+          </div>
         </div>
       </section>
+
 
       {/* Filter section */}
       <section className="relative z-10 -mt-10 mx-auto max-w-5xl px-4 sm:px-6">

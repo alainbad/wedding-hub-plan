@@ -60,7 +60,6 @@ function AuthPage() {
   const { user, loading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [companyName, setCompanyName] = useState("");
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
@@ -80,33 +79,6 @@ function AuthPage() {
     navigate({ to: "/dashboard" });
   };
 
-  const signUp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (password.length < 6) {
-      toast.error("Password must be at least 6 characters.");
-      return;
-    }
-    setBusy(true);
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/dashboard`,
-        data: { company_name: companyName },
-      },
-    });
-    setBusy(false);
-    if (error) {
-      toast.error(error.message);
-      return;
-    }
-    if (data.session) {
-      toast.success("Account created! Let's set up your profile.");
-      navigate({ to: "/dashboard" });
-    } else {
-      toast.success("Check your email to confirm your account.");
-    }
-  };
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-secondary/30 px-4 py-12">

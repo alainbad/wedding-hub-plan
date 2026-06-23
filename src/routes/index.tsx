@@ -143,7 +143,7 @@ function Home() {
             <h2 className="font-serif text-lg font-semibold text-foreground">Find your perfect wedding setup</h2>
           </div>
 
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
             <div className="space-y-1.5">
               <Label htmlFor="location" className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                 Location

@@ -99,15 +99,6 @@ function creativeWhatsAppLink(creative: Creative) {
 }
 
 
-const cuisineOptions = [
-  "Lebanese",
-  "International",
-  "Italian",
-  "Fusion",
-  "Mexican",
-  "Mediterranean",
-  "French",
-];
 
 export const Route = createFileRoute("/creative/$creativeId")({
   head: () => ({

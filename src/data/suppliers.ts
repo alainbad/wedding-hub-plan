@@ -29,7 +29,11 @@ export type CategorySlug =
   | "catering"
   | "entertainment"
   | "beauty"
-  | "cakes";
+  | "cakes"
+  | "car-rentals"
+  | "travel-accommodation"
+  | "event-planners"
+  | "reception-organizers";
 
 export interface Category {
   slug: CategorySlug;
@@ -47,6 +51,10 @@ export const categories: Category[] = [
   { slug: "entertainment", name: "Entertainment", tagline: "Bands, DJs & performers", image: entertainmentImg, count: 37 },
   { slug: "beauty", name: "Hair & Makeup", tagline: "Bridal beauty artists", image: beautyImg, count: 59 },
   { slug: "cakes", name: "Cakes & Sweets", tagline: "Patisserie & dessert tables", image: cakeImg, count: 29 },
+  { slug: "car-rentals", name: "Car Rentals", tagline: "Luxury cars & transport for your big day", image: venueImg, count: 1 },
+  { slug: "travel-accommodation", name: "Travel and Accommodation", tagline: "Hotels, guest houses & honeymoon stays", image: heroImg, count: 1 },
+  { slug: "event-planners", name: "Event Planners", tagline: "Full-service wedding planning & coordination", image: cateringImg, count: 1 },
+  { slug: "reception-organizers", name: "Reception Organizers", tagline: "Reception setup, hosting & entertainment flow", image: entertainmentImg, count: 1 },
 ];
 
 export type Tier = "Featured" | "Premium" | "Elite";

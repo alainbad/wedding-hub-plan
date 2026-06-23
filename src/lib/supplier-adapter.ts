@@ -9,6 +9,10 @@ const fallbackByCategory: Record<string, string> = {
   entertainment: categoryImages.entertainment,
   beauty: categoryImages.beauty,
   cakes: categoryImages.cake,
+  "car-rentals": categoryImages.carRentals,
+  "travel-accommodation": categoryImages.travelAccommodation,
+  "event-planners": categoryImages.eventPlanners,
+  "reception-organizers": categoryImages.receptionOrganizers,
 };
 
 /** Map a database supplier row to the public-facing Supplier shape. */

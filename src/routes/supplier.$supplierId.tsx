@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useMemo, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import {
@@ -149,6 +149,37 @@ function SupplierDetail() {
 
   const supplier = staticSupplier ?? (dbRow ? adaptSupplier(dbRow) : undefined);
   const dbId = staticSupplier ? null : (dbRow?.id ?? null);
+  const queryClient = useQueryClient();
+
+  // Count a profile view once per visit for real (database-backed) suppliers.
+  useEffect(() => {
+    if (!dbId) return;
+    void supabase.rpc("increment_profile_views", { _supplier_id: dbId });
+  }, [dbId]);
+
+  // Reviews for real suppliers
+  const { data: reviews = [] } = useQuery({
+    queryKey: ["supplier-reviews", dbId],
+    enabled: !!dbId,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("reviews")
+        .select("id, customer_name, rating, review, reply, created_at")
+        .eq("supplier_id", dbId!)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  // Write-a-review dialog state
+  const [reviewOpen, setReviewOpen] = useState(false);
+  const [reviewerName, setReviewerName] = useState("");
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewText, setReviewText] = useState("");
+  const [submittingReview, setSubmittingReview] = useState(false);
+
+
 
   const unavailableDates = useMemo(
     () => getUnavailableDates(supplierId),
@@ -255,6 +286,35 @@ function SupplierDetail() {
     setQuoteOpen(false);
   };
 
+  const submitReview = async () => {
+    if (!dbId) return;
+    if (!reviewerName.trim() || !reviewText.trim()) {
+      toast.error("Please add your name and a short review.");
+      return;
+    }
+    setSubmittingReview(true);
+    const { error } = await supabase.from("reviews").insert({
+      supplier_id: dbId,
+      customer_name: reviewerName.trim(),
+      rating: reviewRating,
+      review: reviewText.trim(),
+    });
+    setSubmittingReview(false);
+    if (error) {
+      toast.error("Could not submit your review. Please try again.");
+      return;
+    }
+    toast.success("Thank you for your review!");
+    setReviewOpen(false);
+    setReviewerName("");
+    setReviewRating(5);
+    setReviewText("");
+    queryClient.invalidateQueries({ queryKey: ["supplier-reviews", dbId] });
+    queryClient.invalidateQueries({ queryKey: ["public-supplier", supplierId] });
+  };
+
+
+
 
   return (
     <div className="min-h-screen bg-background">
@@ -328,7 +388,67 @@ function SupplierDetail() {
               </li>
             ))}
           </ul>
+
+          {dbId && (
+            <>
+              <div className="mt-10 flex items-center justify-between">
+                <h2 className="font-serif text-2xl font-semibold text-foreground">
+                  Reviews
+                  {reviews.length > 0 && (
+                    <span className="ml-2 text-base font-normal text-muted-foreground">
+                      ({supplier.rating.toFixed(1)} · {reviews.length})
+                    </span>
+                  )}
+                </h2>
+                <Button variant="outline" size="sm" onClick={() => setReviewOpen(true)}>
+                  Write a review
+                </Button>
+              </div>
+
+              {reviews.length === 0 ? (
+                <p className="mt-4 text-sm text-muted-foreground">
+                  No reviews yet — be the first to leave one.
+                </p>
+              ) : (
+                <ul className="mt-4 space-y-4">
+                  {reviews.map((r) => (
+                    <li key={r.id} className="rounded-2xl border border-border bg-card p-5">
+                      <div className="flex items-center justify-between">
+                        <span className="font-medium text-foreground">{r.customer_name}</span>
+                        <span className="inline-flex items-center gap-0.5">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <Star
+                              key={i}
+                              className={cn(
+                                "h-4 w-4",
+                                i < r.rating
+                                  ? "fill-accent text-accent"
+                                  : "text-muted-foreground/30",
+                              )}
+                            />
+                          ))}
+                        </span>
+                      </div>
+                      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                        {r.review}
+                      </p>
+                      {r.reply && (
+                        <div className="mt-3 rounded-xl bg-muted/60 p-3 text-sm">
+                          <p className="font-medium text-foreground">Reply from {supplier.name}</p>
+                          <p className="mt-1 text-muted-foreground">{r.reply}</p>
+                        </div>
+                      )}
+                      <p className="mt-2 text-xs text-muted-foreground">
+                        {format(new Date(r.created_at), "PPP")}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </>
+          )}
         </div>
+
 
         {/* Booking card */}
         <aside className="lg:sticky lg:top-24 lg:self-start">
@@ -593,6 +713,75 @@ function SupplierDetail() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Write a review dialog */}
+      <Dialog open={reviewOpen} onOpenChange={setReviewOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-serif text-2xl">Write a review</DialogTitle>
+            <DialogDescription>
+              Share your experience with {supplier.name}.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="review-name">Your name</Label>
+              <Input
+                id="review-name"
+                value={reviewerName}
+                onChange={(e) => setReviewerName(e.target.value)}
+                placeholder="Your name"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label>Rating</Label>
+              <div className="flex items-center gap-1">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => setReviewRating(i + 1)}
+                    aria-label={`${i + 1} star${i === 0 ? "" : "s"}`}
+                  >
+                    <Star
+                      className={cn(
+                        "h-7 w-7 transition-colors",
+                        i < reviewRating
+                          ? "fill-accent text-accent"
+                          : "text-muted-foreground/30",
+                      )}
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="review-text">Your review</Label>
+              <Textarea
+                id="review-text"
+                value={reviewText}
+                onChange={(e) => setReviewText(e.target.value)}
+                placeholder="What did you love about working with them?"
+                rows={4}
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setReviewOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={submitReview} disabled={submittingReview}>
+              <Send className="mr-2 h-4 w-4" /> {submittingReview ? "Submitting…" : "Submit review"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+
 
       {related.length > 0 && (
         <section className="mx-auto mt-20 max-w-6xl px-4 sm:px-6">

@@ -372,6 +372,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      increment_profile_views: {
+        Args: { _supplier_id: string }
+        Returns: undefined
+      }
       owns_supplier: { Args: { _supplier_id: string }; Returns: boolean }
       supplier_is_approved: { Args: { _supplier_id: string }; Returns: boolean }
     }

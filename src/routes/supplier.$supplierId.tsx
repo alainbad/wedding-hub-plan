@@ -129,7 +129,26 @@ function SupplierNotFound() {
 
 function SupplierDetail() {
   const { supplierId } = Route.useParams();
-  const supplier = getSupplier(supplierId);
+  const staticSupplier = getSupplier(supplierId);
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(supplierId);
+
+  const { data: dbRow, isLoading: dbLoading } = useQuery({
+    queryKey: ["public-supplier", supplierId],
+    enabled: !staticSupplier && isUuid,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("suppliers")
+        .select("*")
+        .eq("id", supplierId)
+        .eq("status", "approved")
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const supplier = staticSupplier ?? (dbRow ? adaptSupplier(dbRow) : undefined);
+  const dbId = staticSupplier ? null : (dbRow?.id ?? null);
 
   const unavailableDates = useMemo(
     () => getUnavailableDates(supplierId),
@@ -149,6 +168,7 @@ function SupplierDetail() {
   const [selectedCuisines, setSelectedCuisines] = useState<string[]>([]);
   const [weddingDate, setWeddingDate] = useState<Date>();
   const [notes, setNotes] = useState("");
+  const [sending, setSending] = useState(false);
 
   const toggleCuisine = (option: string) => {
     setSelectedCuisines((prev) =>
@@ -156,13 +176,58 @@ function SupplierDetail() {
     );
   };
 
+  if (!staticSupplier && isUuid && dbLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <SiteHeader />
+        <div className="mx-auto max-w-md px-4 py-32 text-center text-sm text-muted-foreground">
+          Loading supplier…
+        </div>
+        <SiteFooter />
+      </div>
+    );
+  }
+
   if (!supplier) return <SupplierNotFound />;
 
   const related = suppliers
     .filter((s) => s.category === supplier.category && s.id !== supplier.id)
     .slice(0, 3);
 
-  const submitQuote = () => {
+  const submitQuote = async () => {
+    // For real (database-backed) suppliers, store the inquiry as a lead so it
+    // appears in the supplier's dashboard inbox.
+    if (dbId) {
+      setSending(true);
+      const messageText = [
+        notes,
+        venueType ? `Venue type: ${venueType}` : "",
+        selectedCuisines.length ? `Cuisine: ${selectedCuisines.join(", ")}` : "",
+      ]
+        .filter(Boolean)
+        .join("\n");
+      const { error } = await supabase.from("leads").insert({
+        supplier_id: dbId,
+        customer_name: fullName,
+        email,
+        phone,
+        location,
+        guest_count: guests ? parseInt(guests, 10) || null : null,
+        budget: "",
+        message: messageText,
+        event_date: weddingDate ? format(weddingDate, "yyyy-MM-dd") : null,
+      });
+      setSending(false);
+      if (error) {
+        toast.error("Could not send your request. Please try again.");
+        return;
+      }
+      toast.success(`Request sent to ${supplier.name}!`);
+      setQuoteOpen(false);
+      return;
+    }
+
+    // Demo suppliers (no backend): fall back to an email draft.
     const lines = [
       `Hello ${supplier.name},`,
       "",

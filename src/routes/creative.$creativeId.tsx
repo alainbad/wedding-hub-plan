@@ -632,36 +632,6 @@ function CreativeDetail() {
                 </Select>
               </div>
               <div className="space-y-1.5">
-                <Label>Number of guests</Label>
-                <Select value={guests} onValueChange={setGuests}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Guest count" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="50-100">50 — 100</SelectItem>
-                    <SelectItem value="100-150">100 — 150</SelectItem>
-                    <SelectItem value="150-250">150 — 250</SelectItem>
-                    <SelectItem value="250+">250+</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-1.5">
-                <Label>Venue type</Label>
-                <Select value={venueType} onValueChange={setVenueType}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Indoor or outdoor" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Indoor Venue">Indoor Venue</SelectItem>
-                    <SelectItem value="Outdoor Venue">Outdoor Venue</SelectItem>
-                    <SelectItem value="Indoor & Outdoor">Indoor &amp; Outdoor</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-1.5">
                 <Label>Wedding date</Label>
                 <Popover>
                   <PopoverTrigger asChild>
@@ -689,44 +659,17 @@ function CreativeDetail() {
               </div>
             </div>
 
-            <div className="space-y-1.5">
-              <Label>Catering cuisine</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      selectedCuisines.length === 0 && "text-muted-foreground",
-                    )}
-                  >
-                    {selectedCuisines.length === 0
-                      ? "Select cuisines"
-                      : selectedCuisines.length === 1
-                        ? selectedCuisines[0]
-                        : `${selectedCuisines[0]} +${selectedCuisines.length - 1} more`}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-56 p-0" align="start">
-                  <ScrollArea className="h-56 p-2">
-                    <div className="space-y-1">
-                      {cuisineOptions.map((option) => (
-                        <label
-                          key={option}
-                          className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
-                        >
-                          <Checkbox
-                            checked={selectedCuisines.includes(option)}
-                            onCheckedChange={() => toggleCuisine(option)}
-                          />
-                          <span>{option}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </ScrollArea>
-                </PopoverContent>
-              </Popover>
-            </div>
+            {/* Category-specific questions */}
+            {quoteFields.length > 0 && (
+              <div className="grid gap-4 sm:grid-cols-2">
+                {quoteFields.map((field) => (
+                  <div key={field.key} className="space-y-1.5">
+                    {renderQuoteField(field)}
+                  </div>
+                ))}
+              </div>
+            )}
+
 
             <div className="space-y-1.5">
               <Label htmlFor="quote-notes">Additional notes</Label>

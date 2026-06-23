@@ -82,7 +82,6 @@ function Home() {
     ...(date && { date: format(date, "yyyy-MM-dd") }),
   };
 
-
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />

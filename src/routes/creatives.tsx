@@ -16,7 +16,7 @@ interface SupplierSearch {
 
 const validCategories = new Set(categories.map((c) => c.slug));
 
-export const Route = createFileRoute("/suppliers")({
+export const Route = createFileRoute("/creatives")({
   validateSearch: (search: Record<string, unknown>): SupplierSearch => {
     const category = search.category as string | undefined;
     return category && validCategories.has(category as CategorySlug)

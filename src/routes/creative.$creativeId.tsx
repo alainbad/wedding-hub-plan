@@ -95,7 +95,7 @@ const cuisineOptions = [
   "French",
 ];
 
-export const Route = createFileRoute("/supplier/$supplierId")({
+export const Route = createFileRoute("/creative/$creativeId")({
   head: () => ({
     meta: [
       { title: "Supplier — WeddingHub Lebanon" },

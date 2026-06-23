@@ -66,6 +66,9 @@ export interface Supplier {
   createdAt?: string;
 }
 
+/** Demo helper: returns an ISO date N days before now so "new joiner" tagging stays current. */
+const daysAgo = (n: number) => new Date(Date.now() - n * 24 * 60 * 60 * 1000).toISOString();
+
 export const suppliers: Supplier[] = [
   {
     id: "villa-cedars",

@@ -53,6 +53,18 @@ const steps = [
 function Home() {
   const featured = suppliers.filter((s) => s.tier === "Elite" || s.tier === "Premium").slice(0, 6);
 
+  const [location, setLocation] = useState("");
+  const [guests, setGuests] = useState("");
+  const [venueType, setVenueType] = useState("");
+  const [cuisine, setCuisine] = useState("");
+
+  const filterSearch = {
+    ...(location && { region: location }),
+    ...(guests && { guests }),
+    ...(venueType && { venueType }),
+    ...(cuisine && { cuisine }),
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />

@@ -115,6 +115,99 @@ function Home() {
         </div>
       </section>
 
+      {/* Filter section */}
+      <section className="relative z-10 -mt-10 mx-auto max-w-5xl px-4 sm:px-6">
+        <div className="rounded-2xl border border-border bg-background p-6 shadow-xl sm:p-8">
+          <div className="mb-5 flex items-center gap-2">
+            <Search className="h-5 w-5 text-primary" />
+            <h2 className="font-serif text-lg font-semibold text-foreground">Find your perfect wedding setup</h2>
+          </div>
+
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="location" className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Location
+              </Label>
+              <Select value={location} onValueChange={setLocation}>
+                <SelectTrigger id="location" className="w-full">
+                  <SelectValue placeholder="Select region" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Beirut">Beirut</SelectItem>
+                  <SelectItem value="Mount Lebanon">Mount Lebanon</SelectItem>
+                  <SelectItem value="North Lebanon">North Lebanon</SelectItem>
+                  <SelectItem value="South Lebanon">South Lebanon</SelectItem>
+                  <SelectItem value="Bekaa">Bekaa</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="guests" className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Number of Guests
+              </Label>
+              <Select value={guests} onValueChange={setGuests}>
+                <SelectTrigger id="guests" className="w-full">
+                  <SelectValue placeholder="Guest count" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="50-100">50 — 100</SelectItem>
+                  <SelectItem value="100-150">100 — 150</SelectItem>
+                  <SelectItem value="150-250">150 — 250</SelectItem>
+                  <SelectItem value="250+">250+</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="venueType" className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Venue Type
+              </Label>
+              <Select value={venueType} onValueChange={setVenueType}>
+                <SelectTrigger id="venueType" className="w-full">
+                  <SelectValue placeholder="Indoor or outdoor" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="indoor">Indoor Venue</SelectItem>
+                  <SelectItem value="outdoor">Outdoor Venue</SelectItem>
+                  <SelectItem value="both">Indoor &amp; Outdoor</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="cuisine" className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Catering Cuisine
+              </Label>
+              <Select value={cuisine} onValueChange={setCuisine}>
+                <SelectTrigger id="cuisine" className="w-full">
+                  <SelectValue placeholder="Select cuisine" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Lebanese">Lebanese</SelectItem>
+                  <SelectItem value="International">International</SelectItem>
+                  <SelectItem value="Italian">Italian</SelectItem>
+                  <SelectItem value="Fusion">Fusion</SelectItem>
+                  <SelectItem value="Mexican">Mexican</SelectItem>
+                  <SelectItem value="Mediterranean">Mediterranean</SelectItem>
+                  <SelectItem value="French">French</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="mt-6 flex items-center justify-end">
+            <Link
+              to="/suppliers"
+              search={filterSearch}
+              className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            >
+              Find Suppliers <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* Categories */}
       <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
         <div className="flex items-end justify-between gap-4">

@@ -67,8 +67,7 @@ function Home() {
             Everything you need for your perfect day
           </h1>
           <p className="mt-5 max-w-xl text-base leading-relaxed text-background/85 sm:text-lg">
-            From cliff-top venues in Batroun to Beirut's finest photographers — discover and book
-            trusted wedding professionals across Lebanon.
+            Crafting exceptional weddings across every corner of Lebanon.
           </p>
 
           <div className="mt-9 flex w-full max-w-lg items-center gap-2 rounded-full border border-background/20 bg-background p-1.5 shadow-2xl">

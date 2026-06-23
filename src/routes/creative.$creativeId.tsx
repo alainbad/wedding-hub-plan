@@ -314,6 +314,148 @@ function CreativeDetail() {
     setQuoteOpen(false);
   };
 
+  const renderQuoteField = (field: QuoteField) => {
+    const value = answers[field.key];
+
+    if (field.type === "select") {
+      return (
+        <>
+          <Label>{field.label}</Label>
+          <Select
+            value={typeof value === "string" ? value : ""}
+            onValueChange={(v) => setAnswer(field.key, v)}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder={field.placeholder ?? "Select"} />
+            </SelectTrigger>
+            <SelectContent>
+              {(field.options ?? []).map((option) => (
+                <SelectItem key={option} value={option}>
+                  {option}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </>
+      );
+    }
+
+    if (field.type === "multiselect") {
+      const selected = Array.isArray(value) ? value : [];
+      return (
+        <>
+          <Label>{field.label}</Label>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "w-full justify-start text-left font-normal",
+                  selected.length === 0 && "text-muted-foreground",
+                )}
+              >
+                {selected.length === 0
+                  ? (field.placeholder ?? "Select")
+                  : selected.length === 1
+                    ? selected[0]
+                    : `${selected[0]} +${selected.length - 1} more`}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-56 p-0" align="start">
+              <ScrollArea className="h-56 p-2">
+                <div className="space-y-1">
+                  {(field.options ?? []).map((option) => (
+                    <label
+                      key={option}
+                      className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
+                    >
+                      <Checkbox
+                        checked={selected.includes(option)}
+                        onCheckedChange={() => toggleMultiAnswer(field.key, option)}
+                      />
+                      <span>{option}</span>
+                    </label>
+                  ))}
+                </div>
+              </ScrollArea>
+            </PopoverContent>
+          </Popover>
+        </>
+      );
+    }
+
+    if (field.type === "boolean") {
+      return (
+        <>
+          <Label>{field.label}</Label>
+          <Select
+            value={typeof value === "string" ? value : ""}
+            onValueChange={(v) => setAnswer(field.key, v)}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="yes">Yes</SelectItem>
+              <SelectItem value="no">No</SelectItem>
+            </SelectContent>
+          </Select>
+        </>
+      );
+    }
+
+    if (field.type === "date") {
+      const dateValue =
+        typeof value === "string" && value ? new Date(value) : undefined;
+      return (
+        <>
+          <Label>{field.label}</Label>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "w-full justify-start text-left font-normal",
+                  !dateValue && "text-muted-foreground",
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {dateValue ? format(dateValue, "PPP") : <span>Pick a date</span>}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={dateValue}
+                onSelect={(d) =>
+                  setAnswer(field.key, d ? format(d, "yyyy-MM-dd") : "")
+                }
+                initialFocus
+                className="pointer-events-auto"
+              />
+            </PopoverContent>
+          </Popover>
+        </>
+      );
+    }
+
+    // text / number
+    return (
+      <>
+        <Label htmlFor={`quote-${field.key}`}>{field.label}</Label>
+        <Input
+          id={`quote-${field.key}`}
+          type={field.type === "number" ? "number" : "text"}
+          value={typeof value === "string" ? value : ""}
+          onChange={(e) => setAnswer(field.key, e.target.value)}
+          placeholder={field.placeholder}
+        />
+      </>
+    );
+  };
+
+
+
 
   const submitReview = async () => {
     if (!dbId) return;

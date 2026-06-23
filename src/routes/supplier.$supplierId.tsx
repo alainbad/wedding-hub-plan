@@ -714,6 +714,75 @@ function SupplierDetail() {
         </DialogContent>
       </Dialog>
 
+      {/* Write a review dialog */}
+      <Dialog open={reviewOpen} onOpenChange={setReviewOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-serif text-2xl">Write a review</DialogTitle>
+            <DialogDescription>
+              Share your experience with {supplier.name}.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="review-name">Your name</Label>
+              <Input
+                id="review-name"
+                value={reviewerName}
+                onChange={(e) => setReviewerName(e.target.value)}
+                placeholder="Your name"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label>Rating</Label>
+              <div className="flex items-center gap-1">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => setReviewRating(i + 1)}
+                    aria-label={`${i + 1} star${i === 0 ? "" : "s"}`}
+                  >
+                    <Star
+                      className={cn(
+                        "h-7 w-7 transition-colors",
+                        i < reviewRating
+                          ? "fill-accent text-accent"
+                          : "text-muted-foreground/30",
+                      )}
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="review-text">Your review</Label>
+              <Textarea
+                id="review-text"
+                value={reviewText}
+                onChange={(e) => setReviewText(e.target.value)}
+                placeholder="What did you love about working with them?"
+                rows={4}
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setReviewOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={submitReview} disabled={submittingReview}>
+              <Send className="mr-2 h-4 w-4" /> {submittingReview ? "Submitting…" : "Submit review"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+
+
       {related.length > 0 && (
         <section className="mx-auto mt-20 max-w-6xl px-4 sm:px-6">
           <h2 className="font-serif text-2xl font-semibold text-foreground">

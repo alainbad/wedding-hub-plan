@@ -73,6 +73,8 @@ function Home() {
   const [guests, setGuests] = useState("");
   const [venueType, setVenueType] = useState("");
   const [cuisine, setCuisine] = useState("");
+  const [date, setDate] = useState<Date>();
+
 
   const filterSearch = {
     ...(location && { region: location }),

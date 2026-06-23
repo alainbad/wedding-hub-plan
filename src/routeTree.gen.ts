@@ -17,6 +17,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as SupplierSupplierIdRouteImport } from './routes/supplier.$supplierId'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard.index'
+import { Route as AuthenticatedDashboardSubscriptionRouteImport } from './routes/_authenticated/dashboard.subscription'
 import { Route as AuthenticatedDashboardServicesRouteImport } from './routes/_authenticated/dashboard.services'
 import { Route as AuthenticatedDashboardProfileRouteImport } from './routes/_authenticated/dashboard.profile'
 import { Route as AuthenticatedDashboardPortfolioRouteImport } from './routes/_authenticated/dashboard.portfolio'
@@ -62,6 +63,12 @@ const AuthenticatedDashboardIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
+const AuthenticatedDashboardSubscriptionRoute =
+  AuthenticatedDashboardSubscriptionRouteImport.update({
+    id: '/subscription',
+    path: '/subscription',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
 const AuthenticatedDashboardServicesRoute =
   AuthenticatedDashboardServicesRouteImport.update({
     id: '/services',
@@ -98,6 +105,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/portfolio': typeof AuthenticatedDashboardPortfolioRoute
   '/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
   '/dashboard/services': typeof AuthenticatedDashboardServicesRoute
+  '/dashboard/subscription': typeof AuthenticatedDashboardSubscriptionRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRoutesByTo {
@@ -110,6 +118,7 @@ export interface FileRoutesByTo {
   '/dashboard/portfolio': typeof AuthenticatedDashboardPortfolioRoute
   '/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
   '/dashboard/services': typeof AuthenticatedDashboardServicesRoute
+  '/dashboard/subscription': typeof AuthenticatedDashboardSubscriptionRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRoutesById {
@@ -125,6 +134,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard/portfolio': typeof AuthenticatedDashboardPortfolioRoute
   '/_authenticated/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
   '/_authenticated/dashboard/services': typeof AuthenticatedDashboardServicesRoute
+  '/_authenticated/dashboard/subscription': typeof AuthenticatedDashboardSubscriptionRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRouteTypes {
@@ -140,6 +150,7 @@ export interface FileRouteTypes {
     | '/dashboard/portfolio'
     | '/dashboard/profile'
     | '/dashboard/services'
+    | '/dashboard/subscription'
     | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -152,6 +163,7 @@ export interface FileRouteTypes {
     | '/dashboard/portfolio'
     | '/dashboard/profile'
     | '/dashboard/services'
+    | '/dashboard/subscription'
     | '/dashboard'
   id:
     | '__root__'
@@ -166,6 +178,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard/portfolio'
     | '/_authenticated/dashboard/profile'
     | '/_authenticated/dashboard/services'
+    | '/_authenticated/dashboard/subscription'
     | '/_authenticated/dashboard/'
   fileRoutesById: FileRoutesById
 }
@@ -236,6 +249,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardIndexRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
+    '/_authenticated/dashboard/subscription': {
+      id: '/_authenticated/dashboard/subscription'
+      path: '/subscription'
+      fullPath: '/dashboard/subscription'
+      preLoaderRoute: typeof AuthenticatedDashboardSubscriptionRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
     '/_authenticated/dashboard/services': {
       id: '/_authenticated/dashboard/services'
       path: '/services'
@@ -272,6 +292,7 @@ interface AuthenticatedDashboardRouteChildren {
   AuthenticatedDashboardPortfolioRoute: typeof AuthenticatedDashboardPortfolioRoute
   AuthenticatedDashboardProfileRoute: typeof AuthenticatedDashboardProfileRoute
   AuthenticatedDashboardServicesRoute: typeof AuthenticatedDashboardServicesRoute
+  AuthenticatedDashboardSubscriptionRoute: typeof AuthenticatedDashboardSubscriptionRoute
   AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
 }
 
@@ -281,6 +302,8 @@ const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
     AuthenticatedDashboardPortfolioRoute: AuthenticatedDashboardPortfolioRoute,
     AuthenticatedDashboardProfileRoute: AuthenticatedDashboardProfileRoute,
     AuthenticatedDashboardServicesRoute: AuthenticatedDashboardServicesRoute,
+    AuthenticatedDashboardSubscriptionRoute:
+      AuthenticatedDashboardSubscriptionRoute,
     AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
   }
 

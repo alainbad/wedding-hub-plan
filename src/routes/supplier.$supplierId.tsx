@@ -286,6 +286,35 @@ function SupplierDetail() {
     setQuoteOpen(false);
   };
 
+  const submitReview = async () => {
+    if (!dbId) return;
+    if (!reviewerName.trim() || !reviewText.trim()) {
+      toast.error("Please add your name and a short review.");
+      return;
+    }
+    setSubmittingReview(true);
+    const { error } = await supabase.from("reviews").insert({
+      supplier_id: dbId,
+      customer_name: reviewerName.trim(),
+      rating: reviewRating,
+      review: reviewText.trim(),
+    });
+    setSubmittingReview(false);
+    if (error) {
+      toast.error("Could not submit your review. Please try again.");
+      return;
+    }
+    toast.success("Thank you for your review!");
+    setReviewOpen(false);
+    setReviewerName("");
+    setReviewRating(5);
+    setReviewText("");
+    queryClient.invalidateQueries({ queryKey: ["supplier-reviews", dbId] });
+    queryClient.invalidateQueries({ queryKey: ["public-supplier", supplierId] });
+  };
+
+
+
 
   return (
     <div className="min-h-screen bg-background">

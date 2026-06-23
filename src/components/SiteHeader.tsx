@@ -37,7 +37,13 @@ export function SiteHeader() {
             </Link>
           ))}
           <Link
-            to="/pricing"
+            to="/auth"
+            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            Supplier login
+          </Link>
+          <Link
+            to="/auth"
             className="rounded-full bg-primary px-5 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
             List your business
@@ -75,7 +81,14 @@ export function SiteHeader() {
             </Link>
           ))}
           <Link
-            to="/pricing"
+            to="/auth"
+            onClick={() => setOpen(false)}
+            className="rounded-md px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          >
+            Supplier login
+          </Link>
+          <Link
+            to="/auth"
             onClick={() => setOpen(false)}
             className="mt-1 rounded-full bg-primary px-4 py-2.5 text-center text-sm font-medium text-primary-foreground"
           >

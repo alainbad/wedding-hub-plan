@@ -1,51 +1,65 @@
-# Phase 1 — Financial Model (Build Plan)
+# Wedding Hub — Supplier Dashboard (MVP)
 
-You confirmed: proceed without the source doc, Phase 1 first, and you delegated the specific numbers to me. So this model ships with **benchmarked, clearly-labeled assumptions** on a single Assumptions tab — every one is a yellow input cell you can overwrite, and the whole model recalculates from there. Nothing is a bare hardcoded constant.
+This delivers the MVP scope you defined: Supplier Authentication, Dashboard Home, My Profile, Services & Packages, Portfolio, Lead Inbox, Subscription Page, and the Admin Approval System. Everything is wired to a real backend so approved supplier info flows automatically onto the existing public website.
 
-## Deliverable
-A single workbook: `WeddingHub-Lebanon-Financial-Model.xlsx`, saved to `/mnt/documents/` and delivered as a downloadable artifact. All outputs are Excel formulas (not values baked in Python), recalculated and error-checked before delivery.
+## Backend (Lovable Cloud)
 
-## Proposed assumptions (you override on review)
-These are starting points benchmarked to regional B2B marketplace / SaaS norms and Lebanon's market reality. All live on the Assumptions tab.
+I'll enable Lovable Cloud (database + auth + storage + server logic — no external accounts needed).
 
-**Pricing (monthly, USD), with annual = 10× monthly (2 months free):**
-- Featured — $29/mo
-- Premium — $79/mo
-- Elite — $199/mo
+### Auth
+- Email/password sign up + login for suppliers.
+- A separate `user_roles` table (`supplier`, `admin`) — roles are never stored on the profile (security best practice). A `has_role()` check gates admin features.
 
-**Supplier growth target:** 300 paying-eligible suppliers by end of Year 1, ramping to ~2,500 by end of Year 3 (matches the targets referenced in your plan).
+### Tables
+```text
+suppliers      profile/business info, status (draft|pending|approved|rejected|
+               suspended), subscription_plan, owner user_id, ratings, contact,
+               region, pricing, social links
+services       supplier_id, name, description, price, duration
+packages       supplier_id, name, price, description, includes[]
+portfolio      supplier_id, media_url, media_type, caption, is_cover, sort_order
+leads          supplier_id, customer_name, event_date, guest_count, budget,
+               location, message, phone, email, status (new|contacted|quoted|
+               booked|lost), notes
+reviews        supplier_id, customer_name, rating, review (read-only in MVP)
+```
+- `portfolio-media` storage bucket for image/video/PDF uploads.
 
-**Funnel:** free listing → activated → paid. Free→paid conversion 12% (Y1, manual high-touch sales), drifting to 18% as the brand matures.
+### Approval flow (key requirement)
+- The public site reads **only `status = 'approved'`** suppliers.
+- Any supplier edit sets `status = 'pending'` (edits stay private until an admin re-approves). I'll keep an `approved_*` published snapshot vs. the editable draft so the live listing doesn't change while a re-edit is pending.
+- Admin approves/rejects/suspends to flip status to live.
 
-**Tier mix of paying suppliers:** 60% Featured / 30% Premium / 10% Elite.
+### Security (RLS)
+- Suppliers can read/write only their own rows (`auth.uid() = user_id`).
+- Public/anon: SELECT only on approved suppliers and their child records.
+- Admins (via `has_role`): full management access.
+- Leads: a public can INSERT (customer inquiry); only the owning supplier + admins can read.
 
-**Monthly churn:** Featured 5% / Premium 3.5% / Elite 2% (lower tiers churn faster).
+## Supplier portal (`/dashboard/*`, auth-gated under `_authenticated`)
 
-**CAC:** modeled as manual-sales cost = rep time per closed supplier × blended hourly cost, plus a small ad-spend line. ~$45 blended CAC in Y1.
+- **Sidebar layout** (shadcn sidebar): Dashboard, My Profile, Services & Packages, Portfolio, Leads, Subscription, Logout. (Availability, Reviews, Promotions, Settings shown as “coming soon” placeholders to keep MVP tight unless you want them now.)
+- **Dashboard Home** — welcome, status cards (profile status, plan, monthly leads, profile views, rating), quick actions.
+- **My Profile** — business info, contact, pricing, service areas, social links. Save Draft / Submit for Approval.
+- **Services & Packages** — CRUD services; package builder (name, price, includes list); add/edit/delete.
+- **Portfolio** — upload images/videos/PDF to storage, set cover, captions, delete, reorder; plan-based limits.
+- **Leads & Requests** — inbox with statuses (New→Contacted→Quoted→Booked→Lost), notes, archive.
+- **Subscription** — plan comparison (Featured $29 / Premium $79 / Elite $199) and select/upgrade (records choice; real payments out of MVP scope).
 
-**Billing split:** 70% monthly / 30% annual (annual prepay affects cash timing).
+## Admin approval system (`/admin/*`, admin-gated)
+- Supplier queue: approve / reject / suspend / delete, assign subscription plan.
+- View all leads + basic stats.
 
-**FX/payments:** revenue modeled in USD (fresh-dollar economy assumption for Lebanon); payment-collection mechanism flagged as an open risk note on the model, since you left it blank — I'll derive the funding ask from runway rather than pick it arbitrarily.
+## Public site integration
+- The existing home/suppliers/supplier pages switch from the static `src/data/suppliers.ts` mock to live approved data from the database (server functions for SSR-safe reads). The static file becomes the seed for a migration so the site isn't empty on day one.
 
-## Workbook structure (tabs)
-1. **Cover / README** — purpose, version, "all yellow cells are inputs" legend, list of every assumption with source/rationale.
-2. **Assumptions** — every driver in one place (pricing, conversion, churn, tier mix, CAC, opex lines, hiring, billing split). Blue = hardcoded input, black = formula.
-3. **Supplier Funnel (36 mo)** — monthly: new free signups → activations → new paid → churned → net paying suppliers, split by tier.
-4. **Revenue (36 mo)** — MRR and ARR by tier and total, derived from funnel × pricing; annual-prepay cash adjustment.
-5. **Costs & Opex (36 mo)** — sales/CAC, salaries/hiring ramp, infra (Supabase/hosting), marketing/content, G&A.
-6. **P&L / Cash (36 mo)** — gross margin, EBITDA, monthly burn, cumulative cash, runway.
-7. **Funding Ask** — runway-derived raise (burn to cash-flow-positive + buffer) with use-of-funds breakdown. Feeds Phase 5 deck.
-8. **Sensitivity** — table showing Y2/Y3 revenue if conversion is 50% / 75% / 100% / 125% of base; second table flexing churn. This directly stress-tests the unexplained Y2/Y3 jumps your Phase 0 audit flagged.
+## Technical notes
+- Server functions (`createServerFn`) for all DB access; public reads via publishable-key client + narrow `anon` SELECT policies; admin/privileged writes verified server-side.
+- Auth-gated routes under `src/routes/_authenticated/`; public routes stay top-level.
+- Seed data (current mock suppliers) inserted via migration as pre-approved.
 
-## Verification (definition of done)
-- Recalculate via the xlsx skill's `recalculate_formulas.py`; confirm **zero** formula errors (#REF!, #DIV/0!, #VALUE!, #NAME?).
-- Spot-check that every revenue/cost cell traces to an Assumptions input (no orphan constants).
-- Confirm color conventions: blue = inputs, black = formulas, yellow fill = key assumptions to revisit.
-- Confirm the sensitivity tab actually swings outputs when conversion/churn change (live dependency, not static).
-- Open-question note block present (payments mechanism, founder pricing override) so nothing silently passes as settled.
+## Out of MVP (future)
+Availability calendar, Reviews replies/reporting, Promotions, full Settings, real payment processing, SMS/WhatsApp notifications.
 
-## Out of scope for this phase
-No deck, schema, PRD, or GTM work — those are Phases 2–8, executed on separate request. This phase only produces and verifies the financial model.
-
-## Technical note
-This is a standalone spreadsheet artifact generated with the xlsx skill (openpyxl + LibreOffice recalculation). It does not touch the app codebase, routes, or Supabase. When you approve, I'll switch to build mode and produce the workbook.
+---
+This is a big build. On approval I'll start by enabling Cloud and creating the schema, then build the portal, then the admin/approval layer and public-site wiring.

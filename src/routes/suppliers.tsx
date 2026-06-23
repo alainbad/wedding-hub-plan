@@ -1,10 +1,13 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Search, SlidersHorizontal } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SupplierCard } from "@/components/SupplierCard";
 import { categories, suppliers, type CategorySlug } from "@/data/suppliers";
+import { supabase } from "@/integrations/supabase/client";
+import { adaptSupplier } from "@/lib/supplier-adapter";
 import { cn } from "@/lib/utils";
 
 interface SupplierSearch {
@@ -44,8 +47,22 @@ function SuppliersPage() {
   const [region, setRegion] = useState("All regions");
   const [sort, setSort] = useState<(typeof sortOptions)[number]>("Recommended");
 
+  const { data: dbSuppliers = [] } = useQuery({
+    queryKey: ["approved-suppliers"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("suppliers")
+        .select("*")
+        .eq("status", "approved");
+      if (error) throw error;
+      return data.map(adaptSupplier);
+    },
+  });
+
+  const allSuppliers = useMemo(() => [...dbSuppliers, ...suppliers], [dbSuppliers]);
+
   const filtered = useMemo(() => {
-    let list = suppliers.slice();
+    let list = allSuppliers.slice();
     if (category) list = list.filter((s) => s.category === category);
     if (region !== "All regions") list = list.filter((s) => s.region === region);
     if (query.trim()) {
@@ -65,7 +82,7 @@ function SuppliersPage() {
       list.sort((a, b) => order[a.tier] - order[b.tier]);
     }
     return list;
-  }, [category, region, query, sort]);
+  }, [allSuppliers, category, region, query, sort]);
 
   const activeCategory = categories.find((c) => c.slug === category);
 

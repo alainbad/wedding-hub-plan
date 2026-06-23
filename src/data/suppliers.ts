@@ -6,6 +6,8 @@ import photographyImg from "@/assets/photography.jpg";
 import entertainmentImg from "@/assets/entertainment.jpg";
 import beautyImg from "@/assets/beauty.jpg";
 import cakeImg from "@/assets/cake.jpg";
+import carRentalsImg from "@/assets/car-rentals.jpg";
+import travelAccommodationImg from "@/assets/travel-accommodation.jpg";
 
 export const categoryImages = {
   hero: heroImg,

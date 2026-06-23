@@ -10,7 +10,6 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SuppliersRouteImport } from './routes/suppliers'
-import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -27,11 +26,6 @@ import { Route as AuthenticatedDashboardLeadsRouteImport } from './routes/_authe
 const SuppliersRoute = SuppliersRouteImport.update({
   id: '/suppliers',
   path: '/suppliers',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PricingRoute = PricingRouteImport.update({
-  id: '/pricing',
-  path: '/pricing',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -103,7 +97,6 @@ const AuthenticatedDashboardLeadsRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/pricing': typeof PricingRoute
   '/suppliers': typeof SuppliersRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
@@ -118,7 +111,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/pricing': typeof PricingRoute
   '/suppliers': typeof SuppliersRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/supplier/$supplierId': typeof SupplierSupplierIdRoute
@@ -134,7 +126,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
-  '/pricing': typeof PricingRoute
   '/suppliers': typeof SuppliersRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteWithChildren
@@ -151,7 +142,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
-    | '/pricing'
     | '/suppliers'
     | '/admin'
     | '/dashboard'
@@ -166,7 +156,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
-    | '/pricing'
     | '/suppliers'
     | '/admin'
     | '/supplier/$supplierId'
@@ -181,7 +170,6 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
-    | '/pricing'
     | '/suppliers'
     | '/_authenticated/admin'
     | '/_authenticated/dashboard'
@@ -198,7 +186,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
-  PricingRoute: typeof PricingRoute
   SuppliersRoute: typeof SuppliersRoute
   SupplierSupplierIdRoute: typeof SupplierSupplierIdRoute
 }
@@ -210,13 +197,6 @@ declare module '@tanstack/react-router' {
       path: '/suppliers'
       fullPath: '/suppliers'
       preLoaderRoute: typeof SuppliersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/pricing': {
-      id: '/pricing'
-      path: '/pricing'
-      fullPath: '/pricing'
-      preLoaderRoute: typeof PricingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -348,7 +328,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
-  PricingRoute: PricingRoute,
   SuppliersRoute: SuppliersRoute,
   SupplierSupplierIdRoute: SupplierSupplierIdRoute,
 }

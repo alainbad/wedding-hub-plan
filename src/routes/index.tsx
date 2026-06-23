@@ -71,6 +71,21 @@ const steps = [
 function Home() {
   const featured = suppliers.filter((s) => s.tier === "Elite" || s.tier === "Premium").slice(0, 6);
 
+  // Featured promotion slides — top suppliers who pay for extra home-page exposure
+  const promoSlides = suppliers
+    .filter((s) => s.tier === "Elite" || s.tier === "Premium")
+    .slice(0, 5);
+
+  const [activeSlide, setActiveSlide] = useState(0);
+
+  useEffect(() => {
+    if (promoSlides.length <= 1) return;
+    const interval = setInterval(() => {
+      setActiveSlide((prev) => (prev + 1) % promoSlides.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [promoSlides.length]);
+
   const [location, setLocation] = useState("");
   const [guests, setGuests] = useState("");
   const [venueType, setVenueType] = useState("");

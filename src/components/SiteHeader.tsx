@@ -6,8 +6,8 @@ import { cn } from "@/lib/utils";
 const navItems = [
   { to: "/", label: "Home" },
   { to: "/suppliers", label: "Suppliers" },
-  { to: "/pricing", label: "For Suppliers" },
 ];
+
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);

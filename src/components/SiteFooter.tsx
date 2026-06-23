@@ -33,9 +33,9 @@ export function SiteFooter() {
               <li><Link to="/suppliers" className="hover:text-foreground">All suppliers</Link></li>
               <li><Link to="/suppliers" search={{ category: "venues" }} className="hover:text-foreground">Venues</Link></li>
               <li><Link to="/suppliers" search={{ category: "photography" }} className="hover:text-foreground">Photographers</Link></li>
-              <li><Link to="/pricing" className="hover:text-foreground">List your business</Link></li>
             </ul>
           </div>
+
 
           <div>
             <h4 className="text-sm font-semibold text-foreground">Company</h4>

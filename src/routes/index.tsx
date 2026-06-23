@@ -463,11 +463,12 @@ function Home() {
               profile, leads and reviews — all in one place.
             </p>
             <Link
-              to="/pricing"
+              to="/auth"
               className="mt-7 inline-flex items-center gap-1.5 rounded-full bg-background px-6 py-3 text-sm font-medium text-primary transition-transform hover:scale-105"
             >
-              See pricing & list your business <ArrowRight className="h-4 w-4" />
+              List your business <ArrowRight className="h-4 w-4" />
             </Link>
+
           </div>
         </div>
       </section>

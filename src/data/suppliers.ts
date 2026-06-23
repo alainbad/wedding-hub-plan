@@ -173,6 +173,7 @@ export const suppliers: Supplier[] = [
       "A versatile ensemble covering Arabic and international repertoire, The Nightingale Band moves seamlessly from a refined ceremony quartet to a full party band that keeps the floor moving until late.",
     services: ["Ceremony quartet", "Reception band", "DJ transition", "Sound system", "Custom song requests"],
     verified: false,
+    createdAt: daysAgo(4),
   },
   {
     id: "atelier-belle",

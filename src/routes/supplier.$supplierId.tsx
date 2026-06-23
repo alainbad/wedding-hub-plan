@@ -1,18 +1,55 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
 import {
   Star,
   MapPin,
   BadgeCheck,
   Check,
   ArrowLeft,
-  MessageSquareHeart,
+  CalendarCheck,
+  FileText,
   Heart,
   Share2,
 } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SupplierCard } from "@/components/SupplierCard";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { getSupplier, suppliers } from "@/data/suppliers";
+
+// Deterministically derive "unavailable" days for a supplier so the calendar
+// shows a stable set of booked dates without a backend.
+function getUnavailableDates(supplierId: string): Date[] {
+  let seed = 0;
+  for (let i = 0; i < supplierId.length; i++) {
+    seed = (seed * 31 + supplierId.charCodeAt(i)) % 100000;
+  }
+  const dates: Date[] = [];
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  for (let month = 0; month < 6; month++) {
+    for (let k = 0; k < 6; k++) {
+      seed = (seed * 1103515245 + 12345) % 2147483648;
+      const day = (seed % 28) + 1;
+      const d = new Date(today.getFullYear(), today.getMonth() + month, day);
+      if (d >= today) dates.push(d);
+    }
+  }
+  return dates;
+}
+
+function isSameDay(a: Date, b: Date) {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
+}
 
 export const Route = createFileRoute("/supplier/$supplierId")({
   head: () => ({

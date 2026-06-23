@@ -186,11 +186,57 @@ function SupplierDetail() {
               )}
             </p>
 
+            <Popover open={availabilityOpen} onOpenChange={setAvailabilityOpen}>
+              <PopoverTrigger asChild>
+                <button
+                  type="button"
+                  className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                >
+                  <CalendarCheck className="h-4 w-4" /> Check availability
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={setSelectedDate}
+                  disabled={(day) =>
+                    day < new Date(new Date().setHours(0, 0, 0, 0)) ||
+                    unavailableDates.some((d) => isSameDay(d, day))
+                  }
+                  modifiers={{ unavailable: unavailableDates }}
+                  modifiersClassNames={{
+                    unavailable: "line-through text-muted-foreground/60",
+                  }}
+                  className="p-3"
+                />
+                <div className="flex items-center gap-4 border-t border-border px-4 py-3 text-xs text-muted-foreground">
+                  <span className="inline-flex items-center gap-1.5">
+                    <span className="h-2.5 w-2.5 rounded-full bg-primary" /> Available
+                  </span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <span className="h-2.5 w-2.5 rounded-full bg-muted-foreground/40" /> Unavailable
+                  </span>
+                </div>
+                {selectedDate && (
+                  <p className="px-4 pb-3 text-xs text-foreground">
+                    {selectedDate.toLocaleDateString(undefined, {
+                      weekday: "long",
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}{" "}
+                    is available.
+                  </p>
+                )}
+              </PopoverContent>
+            </Popover>
+
             <button
               type="button"
-              className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+              className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full border border-primary px-5 py-3 text-sm font-medium text-primary transition-colors hover:bg-primary/5"
             >
-              <MessageSquareHeart className="h-4 w-4" /> Request availability
+              <FileText className="h-4 w-4" /> Request a quote
             </button>
             <div className="mt-3 flex gap-3">
               <button

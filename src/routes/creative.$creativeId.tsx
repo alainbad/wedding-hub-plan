@@ -51,6 +51,10 @@ import { cn } from "@/lib/utils";
 import { getCreative, creatives, type Creative } from "@/data/creatives";
 import { supabase } from "@/integrations/supabase/client";
 import { adaptCreative } from "@/lib/creative-adapter";
+import {
+  QUOTE_FIELDS_BY_CATEGORY,
+  type QuoteField,
+} from "@/lib/creative-constants";
 
 // Deterministically derive "unavailable" days for a creative so the calendar
 // shows a stable set of booked dates without a backend.

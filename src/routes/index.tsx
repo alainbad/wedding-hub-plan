@@ -4,9 +4,7 @@ import { Search, BadgeCheck, MessageSquareHeart, CalendarCheck, ArrowRight, Star
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SupplierCard } from "@/components/SupplierCard";
-import { SiteHeader } from "@/components/SiteHeader";
-import { SiteFooter } from "@/components/SiteFooter";
-import { SupplierCard } from "@/components/SupplierCard";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,

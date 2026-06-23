@@ -1,18 +1,55 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
 import {
   Star,
   MapPin,
   BadgeCheck,
   Check,
   ArrowLeft,
-  MessageSquareHeart,
+  CalendarCheck,
+  FileText,
   Heart,
   Share2,
 } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SupplierCard } from "@/components/SupplierCard";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { getSupplier, suppliers } from "@/data/suppliers";
+
+// Deterministically derive "unavailable" days for a supplier so the calendar
+// shows a stable set of booked dates without a backend.
+function getUnavailableDates(supplierId: string): Date[] {
+  let seed = 0;
+  for (let i = 0; i < supplierId.length; i++) {
+    seed = (seed * 31 + supplierId.charCodeAt(i)) % 100000;
+  }
+  const dates: Date[] = [];
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  for (let month = 0; month < 6; month++) {
+    for (let k = 0; k < 6; k++) {
+      seed = (seed * 1103515245 + 12345) % 2147483648;
+      const day = (seed % 28) + 1;
+      const d = new Date(today.getFullYear(), today.getMonth() + month, day);
+      if (d >= today) dates.push(d);
+    }
+  }
+  return dates;
+}
+
+function isSameDay(a: Date, b: Date) {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
+}
 
 export const Route = createFileRoute("/supplier/$supplierId")({
   head: () => ({
@@ -50,11 +87,19 @@ function SupplierDetail() {
   const { supplierId } = Route.useParams();
   const supplier = getSupplier(supplierId);
 
+  const unavailableDates = useMemo(
+    () => getUnavailableDates(supplierId),
+    [supplierId],
+  );
+  const [availabilityOpen, setAvailabilityOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>();
+
   if (!supplier) return <SupplierNotFound />;
 
   const related = suppliers
     .filter((s) => s.category === supplier.category && s.id !== supplier.id)
     .slice(0, 3);
+
 
   return (
     <div className="min-h-screen bg-background">
@@ -141,11 +186,57 @@ function SupplierDetail() {
               )}
             </p>
 
+            <Popover open={availabilityOpen} onOpenChange={setAvailabilityOpen}>
+              <PopoverTrigger asChild>
+                <button
+                  type="button"
+                  className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                >
+                  <CalendarCheck className="h-4 w-4" /> Check availability
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={setSelectedDate}
+                  disabled={(day) =>
+                    day < new Date(new Date().setHours(0, 0, 0, 0)) ||
+                    unavailableDates.some((d) => isSameDay(d, day))
+                  }
+                  modifiers={{ unavailable: unavailableDates }}
+                  modifiersClassNames={{
+                    unavailable: "line-through text-muted-foreground/60",
+                  }}
+                  className="p-3"
+                />
+                <div className="flex items-center gap-4 border-t border-border px-4 py-3 text-xs text-muted-foreground">
+                  <span className="inline-flex items-center gap-1.5">
+                    <span className="h-2.5 w-2.5 rounded-full bg-primary" /> Available
+                  </span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <span className="h-2.5 w-2.5 rounded-full bg-muted-foreground/40" /> Unavailable
+                  </span>
+                </div>
+                {selectedDate && (
+                  <p className="px-4 pb-3 text-xs text-foreground">
+                    {selectedDate.toLocaleDateString(undefined, {
+                      weekday: "long",
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}{" "}
+                    is available.
+                  </p>
+                )}
+              </PopoverContent>
+            </Popover>
+
             <button
               type="button"
-              className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+              className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full border border-primary px-5 py-3 text-sm font-medium text-primary transition-colors hover:bg-primary/5"
             >
-              <MessageSquareHeart className="h-4 w-4" /> Request availability
+              <FileText className="h-4 w-4" /> Request a quote
             </button>
             <div className="mt-3 flex gap-3">
               <button

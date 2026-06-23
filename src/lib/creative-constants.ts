@@ -1,4 +1,4 @@
-// Shared constants for the supplier dashboard & public site.
+// Shared constants for the creative dashboard & public site.
 
 export const CATEGORY_OPTIONS = [
   { slug: "venues", label: "Venue" },
@@ -108,5 +108,5 @@ export const STATUS_LABEL: Record<string, string> = {
 };
 
 export function categoryLabelFor(slug: string): string {
-  return CATEGORY_OPTIONS.find((c) => c.slug === slug)?.label ?? "Supplier";
+  return CATEGORY_OPTIONS.find((c) => c.slug === slug)?.label ?? "Creative";
 }

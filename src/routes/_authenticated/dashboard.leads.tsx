@@ -5,8 +5,8 @@ import { format } from "date-fns";
 import { toast } from "sonner";
 import { Loader2, Inbox, Mail, Phone, MapPin, Users, Calendar, Archive } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useMySupplier } from "@/hooks/use-my-supplier";
-import { LEAD_STATUSES, LEAD_STATUS_LABEL, type LeadStatus } from "@/lib/supplier-constants";
+import { useMyCreative } from "@/hooks/use-my-creative";
+import { LEAD_STATUSES, LEAD_STATUS_LABEL, type LeadStatus } from "@/lib/creative-constants";
 import type { Tables } from "@/integrations/supabase/types";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -36,16 +36,16 @@ const statusStyles: Record<LeadStatus, string> = {
 
 function LeadsPage() {
   const queryClient = useQueryClient();
-  const { data: supplier } = useMySupplier();
-  const supplierId = supplier?.id;
+  const { data: creative } = useMyCreative();
+  const creativeId = creative?.id;
   const [filter, setFilter] = useState<"all" | LeadStatus>("all");
   const [showArchived, setShowArchived] = useState(false);
 
   const { data: leads = [], isLoading } = useQuery({
-    queryKey: ["leads", supplierId],
-    enabled: !!supplierId,
+    queryKey: ["leads", creativeId],
+    enabled: !!creativeId,
     queryFn: async () => {
-      const { data, error } = await supabase.from("leads").select("*").eq("supplier_id", supplierId!).order("created_at", { ascending: false });
+      const { data, error } = await supabase.from("leads").select("*").eq("supplier_id", creativeId!).order("created_at", { ascending: false });
       if (error) throw error;
       return data;
     },

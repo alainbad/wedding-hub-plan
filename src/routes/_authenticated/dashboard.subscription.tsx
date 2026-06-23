@@ -4,8 +4,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Check, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useMySupplier } from "@/hooks/use-my-supplier";
-import { PLANS, type PlanKey } from "@/lib/supplier-constants";
+import { useMyCreative } from "@/hooks/use-my-creative";
+import { PLANS, type PlanKey } from "@/lib/creative-constants";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -16,17 +16,17 @@ export const Route = createFileRoute("/_authenticated/dashboard/subscription")({
 
 function SubscriptionPage() {
   const queryClient = useQueryClient();
-  const { data: supplier } = useMySupplier();
-  const current = supplier?.subscription_plan ?? "Featured";
+  const { data: creative } = useMyCreative();
+  const current = creative?.subscription_plan ?? "Featured";
   const [saving, setSaving] = useState<PlanKey | null>(null);
 
   const choose = async (plan: PlanKey) => {
-    if (!supplier) return;
+    if (!creative) return;
     setSaving(plan);
-    const { error } = await supabase.from("suppliers").update({ subscription_plan: plan }).eq("id", supplier.id);
+    const { error } = await supabase.from("suppliers").update({ subscription_plan: plan }).eq("id", creative.id);
     setSaving(null);
     if (error) return toast.error(error.message);
-    queryClient.invalidateQueries({ queryKey: ["my-supplier"] });
+    queryClient.invalidateQueries({ queryKey: ["my-creative"] });
     toast.success(`You're now on the ${plan} plan.`);
   };
 

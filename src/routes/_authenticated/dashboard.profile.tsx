@@ -4,13 +4,13 @@ import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Loader2, Save, Send } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useMySupplier, type SupplierRow } from "@/hooks/use-my-supplier";
+import { useMyCreative, type CreativeRow } from "@/hooks/use-my-creative";
 import {
   CATEGORY_OPTIONS,
   REGION_OPTIONS,
   SERVICE_AREAS,
   categoryLabelFor,
-} from "@/lib/supplier-constants";
+} from "@/lib/creative-constants";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,7 +29,7 @@ export const Route = createFileRoute("/_authenticated/dashboard/profile")({
   component: ProfilePage,
 });
 
-type FormState = Partial<SupplierRow>;
+type FormState = Partial<CreativeRow>;
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -42,15 +42,15 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 
 function ProfilePage() {
   const queryClient = useQueryClient();
-  const { data: supplier, isLoading } = useMySupplier();
+  const { data: creative, isLoading } = useMyCreative();
   const [form, setForm] = useState<FormState>({});
   const [saving, setSaving] = useState<"draft" | "submit" | null>(null);
 
   useEffect(() => {
-    if (supplier) setForm(supplier);
-  }, [supplier]);
+    if (creative) setForm(creative);
+  }, [creative]);
 
-  if (isLoading || !supplier) {
+  if (isLoading || !creative) {
     return (
       <div className="flex h-64 items-center justify-center">
         <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
@@ -58,7 +58,7 @@ function ProfilePage() {
     );
   }
 
-  const set = (key: keyof SupplierRow, value: unknown) => setForm((f) => ({ ...f, [key]: value }));
+  const set = (key: keyof CreativeRow, value: unknown) => setForm((f) => ({ ...f, [key]: value }));
 
   const toggleArea = (area: string) => {
     const current = (form.service_areas as string[]) ?? [];
@@ -72,7 +72,7 @@ function ProfilePage() {
     setSaving(submit ? "submit" : "draft");
     const nextStatus = submit
       ? "pending"
-      : supplier.status === "approved"
+      : creative.status === "approved"
         ? "pending"
         : "draft";
 
@@ -97,16 +97,16 @@ function ProfilePage() {
       price_range: form.price_range ?? "",
       service_areas: (form.service_areas as string[]) ?? [],
       image_url: form.image_url ?? "",
-      status: nextStatus as SupplierRow["status"],
+      status: nextStatus as CreativeRow["status"],
     };
 
-    const { error } = await supabase.from("suppliers").update(payload).eq("id", supplier.id);
+    const { error } = await supabase.from("suppliers").update(payload).eq("id", creative.id);
     setSaving(null);
     if (error) {
       toast.error(error.message);
       return;
     }
-    await queryClient.invalidateQueries({ queryKey: ["my-supplier"] });
+    await queryClient.invalidateQueries({ queryKey: ["my-creative"] });
     if (submit) toast.success("Submitted for approval! An admin will review your profile.");
     else if (nextStatus === "pending")
       toast.success("Saved. Your changes will be reviewed before going live.");

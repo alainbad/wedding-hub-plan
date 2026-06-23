@@ -4,8 +4,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Loader2, Plus, Trash2, Star, FileText, Video, ImageIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useMySupplier } from "@/hooks/use-my-supplier";
-import { PORTFOLIO_LIMITS } from "@/lib/supplier-constants";
+import { useMyCreative } from "@/hooks/use-my-creative";
+import { PORTFOLIO_LIMITS } from "@/lib/creative-constants";
 import type { Tables } from "@/integrations/supabase/types";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -34,16 +34,16 @@ type Media = Tables<"portfolio">;
 
 function PortfolioPage() {
   const queryClient = useQueryClient();
-  const { data: supplier } = useMySupplier();
-  const supplierId = supplier?.id;
-  const plan = supplier?.subscription_plan ?? "Featured";
+  const { data: creative } = useMyCreative();
+  const creativeId = creative?.id;
+  const plan = creative?.subscription_plan ?? "Featured";
   const limits = PORTFOLIO_LIMITS[plan];
 
   const { data: items = [], isLoading } = useQuery({
-    queryKey: ["portfolio", supplierId],
-    enabled: !!supplierId,
+    queryKey: ["portfolio", creativeId],
+    enabled: !!creativeId,
     queryFn: async () => {
-      const { data, error } = await supabase.from("portfolio").select("*").eq("supplier_id", supplierId!).order("sort_order");
+      const { data, error } = await supabase.from("portfolio").select("*").eq("supplier_id", creativeId!).order("sort_order");
       if (error) throw error;
       return data;
     },
@@ -63,7 +63,7 @@ function PortfolioPage() {
       return toast.error(`Your ${plan} plan allows ${limits.videos} video(s). Upgrade for more.`);
 
     const { error } = await supabase.from("portfolio").insert({
-      supplier_id: supplierId!,
+      supplier_id: creativeId!,
       media_url: form.media_url.trim(),
       media_type: form.media_type,
       caption: form.caption,
@@ -85,12 +85,12 @@ function PortfolioPage() {
   };
 
   const setCover = async (item: Media) => {
-    await supabase.from("portfolio").update({ is_cover: false }).eq("supplier_id", supplierId!);
+    await supabase.from("portfolio").update({ is_cover: false }).eq("supplier_id", creativeId!);
     const { error } = await supabase.from("portfolio").update({ is_cover: true }).eq("id", item.id);
     if (error) return toast.error(error.message);
-    if (item.media_url) await supabase.from("suppliers").update({ image_url: item.media_url }).eq("id", supplierId!);
+    if (item.media_url) await supabase.from("suppliers").update({ image_url: item.media_url }).eq("id", creativeId!);
     queryClient.invalidateQueries({ queryKey: ["portfolio"] });
-    queryClient.invalidateQueries({ queryKey: ["my-supplier"] });
+    queryClient.invalidateQueries({ queryKey: ["my-creative"] });
     toast.success("Cover image set.");
   };
 

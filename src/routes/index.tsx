@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { SupplierCard } from "@/components/SupplierCard";
+import { CreativeCard } from "@/components/CreativeCard";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -32,18 +32,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { categories, suppliers, categoryImages } from "@/data/suppliers";
+import { categories, creatives, categoryImages } from "@/data/creatives";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "WeddingHub Lebanon — Find & Book Trusted Wedding Suppliers" },
+      { title: "WeddingHub Lebanon — Find & Book Trusted Wedding Creatives" },
       {
         name: "description",
         content:
-          "Discover Lebanon's finest wedding venues, photographers, florists and caterers. Browse verified suppliers and plan your day with confidence.",
+          "Discover Lebanon's finest wedding venues, photographers, florists and caterers. Browse verified creatives and plan your day with confidence.",
       },
-      { property: "og:title", content: "WeddingHub Lebanon — Wedding Suppliers" },
+      { property: "og:title", content: "WeddingHub Lebanon — Wedding Creatives" },
       { property: "og:image", content: categoryImages.hero },
     ],
   }),
@@ -54,7 +54,7 @@ const steps = [
   {
     icon: Search,
     title: "Browse & discover",
-    text: "Explore curated suppliers across every category, filtered by region and budget.",
+    text: "Explore curated creatives across every category, filtered by region and budget.",
   },
   {
     icon: MessageSquareHeart,
@@ -69,10 +69,10 @@ const steps = [
 ];
 
 function Home() {
-  const featured = suppliers.filter((s) => s.tier === "Elite" || s.tier === "Premium").slice(0, 6);
+  const featured = creatives.filter((s) => s.tier === "Elite" || s.tier === "Premium").slice(0, 6);
 
-  // Featured promotion slides — top suppliers who pay for extra home-page exposure
-  const promoSlides = suppliers
+  // Featured promotion slides — top creatives who pay for extra home-page exposure
+  const promoSlides = creatives
     .filter((s) => s.tier === "Elite" || s.tier === "Premium")
     .slice(0, 5);
 
@@ -127,7 +127,7 @@ function Home() {
             <img
               key={slide.id}
               src={slide.image}
-              alt={`Featured supplier — ${slide.name}`}
+              alt={`Featured creative — ${slide.name}`}
               width={1600}
               height={1200}
               className={cn(
@@ -139,10 +139,10 @@ function Home() {
           <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/40 to-foreground/30" />
         </div>
 
-        {/* Featured promotion card — rotating top supplier */}
+        {/* Featured promotion card — rotating top creative */}
         <Link
-          to="/supplier/$supplierId"
-          params={{ supplierId: promoSlides[activeSlide]?.id ?? "" }}
+          to="/creative/$creativeId"
+          params={{ creativeId: promoSlides[activeSlide]?.id ?? "" }}
           className="absolute right-4 top-4 z-20 hidden max-w-[16rem] items-center gap-3 rounded-2xl border border-background/20 bg-foreground/40 p-3 backdrop-blur-md transition-transform hover:scale-105 sm:flex"
         >
           <img
@@ -182,7 +182,7 @@ function Home() {
               className="min-w-0 flex-1 bg-transparent px-1 py-2 text-sm text-foreground outline-none placeholder:text-muted-foreground"
             />
             <Link
-              to="/suppliers"
+              to="/creatives"
               className="rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
             >
               Search
@@ -190,7 +190,7 @@ function Home() {
           </div>
 
           <div className="mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-sm text-background/80">
-            <span className="inline-flex items-center gap-1.5"><BadgeCheck className="h-4 w-4" /> 300+ verified suppliers</span>
+            <span className="inline-flex items-center gap-1.5"><BadgeCheck className="h-4 w-4" /> 300+ verified creatives</span>
             <span className="inline-flex items-center gap-1.5"><Star className="h-4 w-4 fill-accent text-accent" /> 4.8 average rating</span>
           </div>
 
@@ -348,11 +348,11 @@ function Home() {
 
           <div className="mt-6 flex items-center justify-end">
             <Link
-              to="/suppliers"
+              to="/creatives"
               search={filterSearch}
               className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
             >
-              Find Suppliers <ArrowRight className="h-4 w-4" />
+              Find Creatives <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         </div>
@@ -368,7 +368,7 @@ function Home() {
             </h2>
           </div>
           <Link
-            to="/suppliers"
+            to="/creatives"
             className="hidden shrink-0 items-center gap-1.5 text-sm font-medium text-primary hover:underline sm:inline-flex"
           >
             View all <ArrowRight className="h-4 w-4" />
@@ -379,7 +379,7 @@ function Home() {
           {categories.map((cat) => (
             <Link
               key={cat.slug}
-              to="/suppliers"
+              to="/creatives"
               search={{ category: cat.slug }}
               className="group relative aspect-[4/5] overflow-hidden rounded-xl"
             >
@@ -392,20 +392,20 @@ function Home() {
               <div className="absolute inset-0 bg-gradient-to-t from-foreground/85 via-foreground/20 to-transparent" />
               <div className="absolute inset-x-0 bottom-0 p-4">
                 <h3 className="font-serif text-xl font-semibold text-background">{cat.name}</h3>
-                <p className="mt-0.5 text-xs text-background/80">{cat.count} suppliers</p>
+                <p className="mt-0.5 text-xs text-background/80">{cat.count} creatives</p>
               </div>
             </Link>
           ))}
         </div>
       </section>
 
-      {/* Featured suppliers */}
+      {/* Featured creatives */}
       <section className="bg-secondary/40 py-20">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="text-center">
             <p className="text-sm font-medium uppercase tracking-[0.18em] text-accent">Hand-picked</p>
             <h2 className="mt-2 font-serif text-3xl font-semibold text-foreground sm:text-4xl">
-              Featured suppliers
+              Featured creatives
             </h2>
             <p className="mx-auto mt-3 max-w-md text-sm text-muted-foreground">
               A glimpse of the talented professionals shaping unforgettable Lebanese weddings.
@@ -414,16 +414,16 @@ function Home() {
 
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {featured.map((s) => (
-              <SupplierCard key={s.id} supplier={s} />
+              <CreativeCard key={s.id} creative={s} />
             ))}
           </div>
 
           <div className="mt-10 text-center">
             <Link
-              to="/suppliers"
+              to="/creatives"
               className="inline-flex items-center gap-1.5 rounded-full border border-primary px-6 py-3 text-sm font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
             >
-              Explore all suppliers <ArrowRight className="h-4 w-4" />
+              Explore all creatives <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         </div>
@@ -451,12 +451,12 @@ function Home() {
         </div>
       </section>
 
-      {/* Supplier CTA */}
+      {/* Creative CTA */}
       <section className="mx-auto max-w-6xl px-4 pb-4 sm:px-6">
         <div className="relative overflow-hidden rounded-3xl bg-primary px-6 py-14 text-center sm:px-12">
           <div className="relative mx-auto max-w-2xl">
             <h2 className="font-serif text-3xl font-semibold text-primary-foreground sm:text-4xl">
-              Are you a wedding supplier?
+              Are you a wedding creative?
             </h2>
             <p className="mx-auto mt-4 max-w-md text-primary-foreground/85">
               Join hundreds of vendors reaching engaged couples across Lebanon. Get a beautiful

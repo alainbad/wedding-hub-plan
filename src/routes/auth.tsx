@@ -13,10 +13,10 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Supplier Login — WeddingHub Lebanon" },
+      { title: "Creative Login — WeddingHub Lebanon" },
       {
         name: "description",
-        content: "Sign in or create your WeddingHub supplier account to manage your profile, leads and bookings.",
+        content: "Sign in or create your WeddingHub creative account to manage your profile, leads and bookings.",
       },
     ],
   }),
@@ -117,7 +117,7 @@ function AuthPage() {
 
       <div className="w-full max-w-md rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8">
         <div className="mb-6 text-center">
-          <h1 className="font-serif text-2xl font-semibold text-foreground">Supplier Portal</h1>
+          <h1 className="font-serif text-2xl font-semibold text-foreground">Creative Portal</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Manage your profile, packages and customer leads.
           </p>

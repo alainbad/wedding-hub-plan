@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Loader2, Plus, Pencil, Trash2, Package } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useMySupplier } from "@/hooks/use-my-supplier";
+import { useMyCreative } from "@/hooks/use-my-creative";
 import type { Tables } from "@/integrations/supabase/types";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -28,24 +28,24 @@ type Pkg = Tables<"packages">;
 
 function ServicesPage() {
   const queryClient = useQueryClient();
-  const { data: supplier } = useMySupplier();
-  const supplierId = supplier?.id;
+  const { data: creative } = useMyCreative();
+  const creativeId = creative?.id;
 
   const { data: services = [], isLoading: servicesLoading } = useQuery({
-    queryKey: ["services", supplierId],
-    enabled: !!supplierId,
+    queryKey: ["services", creativeId],
+    enabled: !!creativeId,
     queryFn: async () => {
-      const { data, error } = await supabase.from("services").select("*").eq("supplier_id", supplierId!).order("created_at");
+      const { data, error } = await supabase.from("services").select("*").eq("supplier_id", creativeId!).order("created_at");
       if (error) throw error;
       return data;
     },
   });
 
   const { data: packages = [], isLoading: pkgLoading } = useQuery({
-    queryKey: ["packages", supplierId],
-    enabled: !!supplierId,
+    queryKey: ["packages", creativeId],
+    enabled: !!creativeId,
     queryFn: async () => {
-      const { data, error } = await supabase.from("packages").select("*").eq("supplier_id", supplierId!).order("price");
+      const { data, error } = await supabase.from("packages").select("*").eq("supplier_id", creativeId!).order("price");
       if (error) throw error;
       return data;
     },
@@ -69,7 +69,7 @@ function ServicesPage() {
   const saveSvc = async () => {
     if (!svcForm.name.trim()) return toast.error("Service name is required.");
     const payload = {
-      supplier_id: supplierId!,
+      supplier_id: creativeId!,
       name: svcForm.name.trim(),
       description: svcForm.description,
       price: Number(svcForm.price) || 0,
@@ -109,7 +109,7 @@ function ServicesPage() {
   const savePkg = async () => {
     if (!pkgForm.name.trim()) return toast.error("Package name is required.");
     const payload = {
-      supplier_id: supplierId!,
+      supplier_id: creativeId!,
       name: pkgForm.name.trim(),
       price: Number(pkgForm.price) || 0,
       description: pkgForm.description,

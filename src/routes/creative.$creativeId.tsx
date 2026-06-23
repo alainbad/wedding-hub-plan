@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { SupplierCard } from "@/components/SupplierCard";
+import { CreativeCard } from "@/components/CreativeCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -47,16 +47,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { getSupplier, suppliers, type Supplier } from "@/data/suppliers";
+import { getCreative, creatives, type Creative } from "@/data/creatives";
 import { supabase } from "@/integrations/supabase/client";
-import { adaptSupplier } from "@/lib/supplier-adapter";
+import { adaptCreative } from "@/lib/creative-adapter";
 
-// Deterministically derive "unavailable" days for a supplier so the calendar
+// Deterministically derive "unavailable" days for a creative so the calendar
 // shows a stable set of booked dates without a backend.
-function getUnavailableDates(supplierId: string): Date[] {
+function getUnavailableDates(creativeId: string): Date[] {
   let seed = 0;
-  for (let i = 0; i < supplierId.length; i++) {
-    seed = (seed * 31 + supplierId.charCodeAt(i)) % 100000;
+  for (let i = 0; i < creativeId.length; i++) {
+    seed = (seed * 31 + creativeId.charCodeAt(i)) % 100000;
   }
   const dates: Date[] = [];
   const today = new Date();
@@ -80,9 +80,9 @@ function isSameDay(a: Date, b: Date) {
   );
 }
 
-// Derive a contact email for the supplier (demo — no backend).
-function supplierEmail(supplier: Supplier) {
-  return `${supplier.id}@weddinghub-lebanon.com`;
+// Derive a contact email for the creative (demo — no backend).
+function creativeEmail(creative: Creative) {
+  return `${creative.id}@weddinghub-lebanon.com`;
 }
 
 const cuisineOptions = [
@@ -98,28 +98,28 @@ const cuisineOptions = [
 export const Route = createFileRoute("/creative/$creativeId")({
   head: () => ({
     meta: [
-      { title: "Supplier — WeddingHub Lebanon" },
-      { name: "description", content: "View this wedding supplier's profile on WeddingHub Lebanon." },
+      { title: "Creative — WeddingHub Lebanon" },
+      { name: "description", content: "View this wedding creative's profile on WeddingHub Lebanon." },
     ],
   }),
-  component: SupplierDetail,
+  component: CreativeDetail,
 });
 
 
-function SupplierNotFound() {
+function CreativeNotFound() {
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
       <div className="mx-auto max-w-md px-4 py-32 text-center">
-        <h1 className="font-serif text-3xl font-semibold text-foreground">Supplier not found</h1>
+        <h1 className="font-serif text-3xl font-semibold text-foreground">Creative not found</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           This profile may have been removed or the link is incorrect.
         </p>
         <Link
-          to="/suppliers"
+          to="/creatives"
           className="mt-6 inline-flex rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground"
         >
-          Browse suppliers
+          Browse creatives
         </Link>
       </div>
       <SiteFooter />
@@ -127,19 +127,19 @@ function SupplierNotFound() {
   );
 }
 
-function SupplierDetail() {
-  const { supplierId } = Route.useParams();
-  const staticSupplier = getSupplier(supplierId);
-  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(supplierId);
+function CreativeDetail() {
+  const { creativeId } = Route.useParams();
+  const staticCreative = getCreative(creativeId);
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(creativeId);
 
   const { data: dbRow, isLoading: dbLoading } = useQuery({
-    queryKey: ["public-supplier", supplierId],
-    enabled: !staticSupplier && isUuid,
+    queryKey: ["public-creative", creativeId],
+    enabled: !staticCreative && isUuid,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("suppliers")
         .select("*")
-        .eq("id", supplierId)
+        .eq("id", creativeId)
         .eq("status", "approved")
         .maybeSingle();
       if (error) throw error;
@@ -147,19 +147,19 @@ function SupplierDetail() {
     },
   });
 
-  const supplier = staticSupplier ?? (dbRow ? adaptSupplier(dbRow) : undefined);
-  const dbId = staticSupplier ? null : (dbRow?.id ?? null);
+  const creative = staticCreative ?? (dbRow ? adaptCreative(dbRow) : undefined);
+  const dbId = staticCreative ? null : (dbRow?.id ?? null);
   const queryClient = useQueryClient();
 
-  // Count a profile view once per visit for real (database-backed) suppliers.
+  // Count a profile view once per visit for real (database-backed) creatives.
   useEffect(() => {
     if (!dbId) return;
     void supabase.rpc("increment_profile_views", { _supplier_id: dbId });
   }, [dbId]);
 
-  // Reviews for real suppliers
+  // Reviews for real creatives
   const { data: reviews = [] } = useQuery({
-    queryKey: ["supplier-reviews", dbId],
+    queryKey: ["creative-reviews", dbId],
     enabled: !!dbId,
     queryFn: async () => {
       const { data, error } = await supabase
@@ -182,8 +182,8 @@ function SupplierDetail() {
 
 
   const unavailableDates = useMemo(
-    () => getUnavailableDates(supplierId),
-    [supplierId],
+    () => getUnavailableDates(creativeId),
+    [creativeId],
   );
   const [availabilityOpen, setAvailabilityOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
@@ -207,27 +207,27 @@ function SupplierDetail() {
     );
   };
 
-  if (!staticSupplier && isUuid && dbLoading) {
+  if (!staticCreative && isUuid && dbLoading) {
     return (
       <div className="min-h-screen bg-background">
         <SiteHeader />
         <div className="mx-auto max-w-md px-4 py-32 text-center text-sm text-muted-foreground">
-          Loading supplier…
+          Loading creative…
         </div>
         <SiteFooter />
       </div>
     );
   }
 
-  if (!supplier) return <SupplierNotFound />;
+  if (!creative) return <CreativeNotFound />;
 
-  const related = suppliers
-    .filter((s) => s.category === supplier.category && s.id !== supplier.id)
+  const related = creatives
+    .filter((s) => s.category === creative.category && s.id !== creative.id)
     .slice(0, 3);
 
   const submitQuote = async () => {
-    // For real (database-backed) suppliers, store the inquiry as a lead so it
-    // appears in the supplier's dashboard inbox.
+    // For real (database-backed) creatives, store the inquiry as a lead so it
+    // appears in the creative's dashboard inbox.
     if (dbId) {
       setSending(true);
       const messageText = [
@@ -253,14 +253,14 @@ function SupplierDetail() {
         toast.error("Could not send your request. Please try again.");
         return;
       }
-      toast.success(`Request sent to ${supplier.name}!`);
+      toast.success(`Request sent to ${creative.name}!`);
       setQuoteOpen(false);
       return;
     }
 
-    // Demo suppliers (no backend): fall back to an email draft.
+    // Demo creatives (no backend): fall back to an email draft.
     const lines = [
-      `Hello ${supplier.name},`,
+      `Hello ${creative.name},`,
       "",
       "I'd like to request a quote with the following requirements:",
       "",
@@ -278,8 +278,8 @@ function SupplierDetail() {
       "",
       "Thank you!",
     ];
-    const subject = `Quote request — ${supplier.name}`;
-    const mailto = `mailto:${supplierEmail(supplier)}?subject=${encodeURIComponent(
+    const subject = `Quote request — ${creative.name}`;
+    const mailto = `mailto:${creativeEmail(creative)}?subject=${encodeURIComponent(
       subject,
     )}&body=${encodeURIComponent(lines.join("\n"))}`;
     window.location.href = mailto;
@@ -309,8 +309,8 @@ function SupplierDetail() {
     setReviewerName("");
     setReviewRating(5);
     setReviewText("");
-    queryClient.invalidateQueries({ queryKey: ["supplier-reviews", dbId] });
-    queryClient.invalidateQueries({ queryKey: ["public-supplier", supplierId] });
+    queryClient.invalidateQueries({ queryKey: ["creative-reviews", dbId] });
+    queryClient.invalidateQueries({ queryKey: ["public-creative", creativeId] });
   };
 
 
@@ -322,11 +322,11 @@ function SupplierDetail() {
 
       <div className="mx-auto max-w-6xl px-4 pt-6 sm:px-6">
         <Link
-          to="/suppliers"
-          search={{ category: supplier.category }}
+          to="/creatives"
+          search={{ category: creative.category }}
           className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground"
         >
-          <ArrowLeft className="h-4 w-4" /> Back to {supplier.categoryLabel}
+          <ArrowLeft className="h-4 w-4" /> Back to {creative.categoryLabel}
         </Link>
       </div>
 
@@ -334,14 +334,14 @@ function SupplierDetail() {
       <section className="mx-auto mt-4 max-w-6xl px-4 sm:px-6">
         <div className="relative aspect-[16/9] overflow-hidden rounded-2xl sm:aspect-[21/9]">
           <img
-            src={supplier.image}
-            alt={supplier.name}
+            src={creative.image}
+            alt={creative.name}
             width={1600}
             height={900}
             className="h-full w-full object-cover"
           />
           <span className="absolute left-4 top-4 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
-            {supplier.tier}
+            {creative.tier}
           </span>
         </div>
       </section>
@@ -350,36 +350,36 @@ function SupplierDetail() {
       <section className="mx-auto mt-8 grid max-w-6xl gap-10 px-4 sm:px-6 lg:grid-cols-[1fr_340px]">
         <div>
           <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-            <MapPin className="h-4 w-4" /> {supplier.city}, {supplier.region}
+            <MapPin className="h-4 w-4" /> {creative.city}, {creative.region}
           </div>
           <h1 className="mt-1.5 flex flex-wrap items-center gap-2 font-serif text-4xl font-semibold text-foreground">
-            {supplier.name}
-            {supplier.verified && (
+            {creative.name}
+            {creative.verified && (
               <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">
                 <BadgeCheck className="h-3.5 w-3.5" /> Verified
               </span>
             )}
           </h1>
-          <p className="mt-2 text-lg text-muted-foreground">{supplier.tagline}</p>
+          <p className="mt-2 text-lg text-muted-foreground">{creative.tagline}</p>
 
           <div className="mt-4 flex items-center gap-4 text-sm">
             <span className="inline-flex items-center gap-1.5 font-medium text-foreground">
               <Star className="h-4 w-4 fill-accent text-accent" />
-              {supplier.rating.toFixed(1)}
-              <span className="font-normal text-muted-foreground">({supplier.reviews} reviews)</span>
+              {creative.rating.toFixed(1)}
+              <span className="font-normal text-muted-foreground">({creative.reviews} reviews)</span>
             </span>
             <span className="text-muted-foreground">·</span>
-            <span className="text-muted-foreground">{supplier.categoryLabel}</span>
+            <span className="text-muted-foreground">{creative.categoryLabel}</span>
           </div>
 
           <hr className="my-8 border-border" />
 
           <h2 className="font-serif text-2xl font-semibold text-foreground">About</h2>
-          <p className="mt-3 leading-relaxed text-muted-foreground">{supplier.about}</p>
+          <p className="mt-3 leading-relaxed text-muted-foreground">{creative.about}</p>
 
           <h2 className="mt-8 font-serif text-2xl font-semibold text-foreground">What's included</h2>
           <ul className="mt-4 grid gap-3 sm:grid-cols-2">
-            {supplier.services.map((service: string) => (
+            {creative.services.map((service: string) => (
               <li key={service} className="flex items-center gap-2.5 text-sm text-foreground">
                 <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
                   <Check className="h-3 w-3" />
@@ -396,7 +396,7 @@ function SupplierDetail() {
                   Reviews
                   {reviews.length > 0 && (
                     <span className="ml-2 text-base font-normal text-muted-foreground">
-                      ({supplier.rating.toFixed(1)} · {reviews.length})
+                      ({creative.rating.toFixed(1)} · {reviews.length})
                     </span>
                   )}
                 </h2>
@@ -434,7 +434,7 @@ function SupplierDetail() {
                       </p>
                       {r.reply && (
                         <div className="mt-3 rounded-xl bg-muted/60 p-3 text-sm">
-                          <p className="font-medium text-foreground">Reply from {supplier.name}</p>
+                          <p className="font-medium text-foreground">Reply from {creative.name}</p>
                           <p className="mt-1 text-muted-foreground">{r.reply}</p>
                         </div>
                       )}
@@ -455,8 +455,8 @@ function SupplierDetail() {
           <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
             <p className="text-sm text-muted-foreground">Starting from</p>
             <p className="mt-0.5 font-serif text-3xl font-semibold text-foreground">
-              ${supplier.priceFrom.toLocaleString()}
-              {supplier.category === "catering" && (
+              ${creative.priceFrom.toLocaleString()}
+              {creative.category === "catering" && (
                 <span className="text-base font-normal text-muted-foreground"> / guest</span>
               )}
             </p>
@@ -541,7 +541,7 @@ function SupplierDetail() {
           <DialogHeader>
             <DialogTitle className="font-serif text-2xl">Request a quote</DialogTitle>
             <DialogDescription>
-              Tell {supplier.name} about your wedding and we'll send your requirements straight to them.
+              Tell {creative.name} about your wedding and we'll send your requirements straight to them.
             </DialogDescription>
           </DialogHeader>
 
@@ -697,7 +697,7 @@ function SupplierDetail() {
                 id="quote-notes"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="Anything else the supplier should know…"
+                placeholder="Anything else the creative should know…"
                 rows={3}
               />
             </div>
@@ -708,7 +708,7 @@ function SupplierDetail() {
               Cancel
             </Button>
             <Button onClick={submitQuote} disabled={sending}>
-              <Send className="mr-2 h-4 w-4" /> {sending ? "Sending…" : "Send to supplier"}
+              <Send className="mr-2 h-4 w-4" /> {sending ? "Sending…" : "Send to creative"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -720,7 +720,7 @@ function SupplierDetail() {
           <DialogHeader>
             <DialogTitle className="font-serif text-2xl">Write a review</DialogTitle>
             <DialogDescription>
-              Share your experience with {supplier.name}.
+              Share your experience with {creative.name}.
             </DialogDescription>
           </DialogHeader>
 
@@ -786,11 +786,11 @@ function SupplierDetail() {
       {related.length > 0 && (
         <section className="mx-auto mt-20 max-w-6xl px-4 sm:px-6">
           <h2 className="font-serif text-2xl font-semibold text-foreground">
-            More {supplier.categoryLabel.toLowerCase()}
+            More {creative.categoryLabel.toLowerCase()}
           </h2>
           <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {related.map((s) => (
-              <SupplierCard key={s.id} supplier={s} />
+              <CreativeCard key={s.id} creative={s} />
             ))}
           </div>
         </section>

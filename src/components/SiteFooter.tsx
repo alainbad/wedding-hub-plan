@@ -12,7 +12,7 @@ export function SiteFooter() {
               <span className="text-xs font-medium uppercase tracking-[0.2em] text-accent">Lebanon</span>
             </div>
             <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted-foreground">
-              Lebanon's directory of trusted wedding suppliers. Browse, compare and connect with
+              Lebanon's directory of trusted wedding creatives. Browse, compare and connect with
               verified venues, photographers, florists and more.
             </p>
             <div className="mt-5 flex gap-3">
@@ -30,9 +30,9 @@ export function SiteFooter() {
           <div>
             <h4 className="text-sm font-semibold text-foreground">Explore</h4>
             <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
-              <li><Link to="/suppliers" className="hover:text-foreground">All suppliers</Link></li>
-              <li><Link to="/suppliers" search={{ category: "venues" }} className="hover:text-foreground">Venues</Link></li>
-              <li><Link to="/suppliers" search={{ category: "photography" }} className="hover:text-foreground">Photographers</Link></li>
+              <li><Link to="/creatives" className="hover:text-foreground">All creatives</Link></li>
+              <li><Link to="/creatives" search={{ category: "venues" }} className="hover:text-foreground">Venues</Link></li>
+              <li><Link to="/creatives" search={{ category: "photography" }} className="hover:text-foreground">Photographers</Link></li>
             </ul>
           </div>
 

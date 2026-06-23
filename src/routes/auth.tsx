@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -16,7 +16,7 @@ export const Route = createFileRoute("/auth")({
       { title: "Creative Login — WeddingHub Lebanon" },
       {
         name: "description",
-        content: "Sign in or create your WeddingHub creative account to manage your profile, leads and bookings.",
+        content: "Sign in to your WeddingHub creative account to manage your profile, leads and bookings.",
       },
     ],
   }),
@@ -60,7 +60,6 @@ function AuthPage() {
   const { user, loading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [companyName, setCompanyName] = useState("");
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
@@ -80,33 +79,8 @@ function AuthPage() {
     navigate({ to: "/dashboard" });
   };
 
-  const signUp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (password.length < 6) {
-      toast.error("Password must be at least 6 characters.");
-      return;
-    }
-    setBusy(true);
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/dashboard`,
-        data: { company_name: companyName },
-      },
-    });
-    setBusy(false);
-    if (error) {
-      toast.error(error.message);
-      return;
-    }
-    if (data.session) {
-      toast.success("Account created! Let's set up your profile.");
-      navigate({ to: "/dashboard" });
-    } else {
-      toast.success("Check your email to confirm your account.");
-    }
-  };
+
+
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-secondary/30 px-4 py-12">
@@ -119,52 +93,23 @@ function AuthPage() {
         <div className="mb-6 text-center">
           <h1 className="font-serif text-2xl font-semibold text-foreground">Creative Portal</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Manage your profile, packages and customer leads.
+            Sign in to manage your profile, packages and customer leads.
           </p>
         </div>
 
-        <Tabs defaultValue="signin">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="signin">Sign in</TabsTrigger>
-            <TabsTrigger value="signup">Create account</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="signin">
-            <form onSubmit={signIn} className="mt-4 space-y-4">
-              <div className="space-y-1.5">
-                <Label htmlFor="si-email">Email</Label>
-                <Input id="si-email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="si-password">Password</Label>
-                <Input id="si-password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
-              </div>
-              <Button type="submit" className="w-full" disabled={busy}>
-                {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : "Sign in"}
-              </Button>
-            </form>
-          </TabsContent>
-
-          <TabsContent value="signup">
-            <form onSubmit={signUp} className="mt-4 space-y-4">
-              <div className="space-y-1.5">
-                <Label htmlFor="su-company">Business name</Label>
-                <Input id="su-company" required value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder="e.g. Villa des Cèdres" />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="su-email">Email</Label>
-                <Input id="su-email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="su-password">Password</Label>
-                <Input id="su-password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 6 characters" />
-              </div>
-              <Button type="submit" className="w-full" disabled={busy}>
-                {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : "Create account"}
-              </Button>
-            </form>
-          </TabsContent>
-        </Tabs>
+        <form onSubmit={signIn} className="mt-4 space-y-4">
+          <div className="space-y-1.5">
+            <Label htmlFor="si-email">Email</Label>
+            <Input id="si-email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="si-password">Password</Label>
+            <Input id="si-password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+          </div>
+          <Button type="submit" className="w-full" disabled={busy}>
+            {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : "Sign in"}
+          </Button>
+        </form>
 
         <div className="my-5 flex items-center gap-3">
           <div className="h-px flex-1 bg-border" />

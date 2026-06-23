@@ -16,7 +16,7 @@ export const Route = createFileRoute("/auth")({
       { title: "Creative Login — WeddingHub Lebanon" },
       {
         name: "description",
-        content: "Sign in or create your WeddingHub creative account to manage your profile, leads and bookings.",
+        content: "Sign in to your WeddingHub creative account to manage your profile, leads and bookings.",
       },
     ],
   }),

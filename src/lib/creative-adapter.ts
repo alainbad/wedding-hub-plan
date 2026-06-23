@@ -33,6 +33,7 @@ export function adaptCreative(row: Tables<"suppliers">): Creative {
     about: row.about,
     services: row.services ?? [],
     verified: row.verified,
+    whatsapp: row.whatsapp || undefined,
     createdAt: row.created_at,
   };
 }

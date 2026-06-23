@@ -12,16 +12,28 @@ import { cn } from "@/lib/utils";
 
 interface CreativeSearch {
   category?: CategorySlug;
+  region?: string;
+  guests?: string;
+  venueType?: string;
+  cuisine?: string[];
+  date?: string;
 }
 
 const validCategories = new Set(categories.map((c) => c.slug));
 
 export const Route = createFileRoute("/creatives")({
   validateSearch: (search: Record<string, unknown>): CreativeSearch => {
+    const result: CreativeSearch = {};
     const category = search.category as string | undefined;
-    return category && validCategories.has(category as CategorySlug)
-      ? { category: category as CategorySlug }
-      : {};
+    if (category && validCategories.has(category as CategorySlug)) {
+      result.category = category as CategorySlug;
+    }
+    if (typeof search.region === "string") result.region = search.region;
+    if (typeof search.guests === "string") result.guests = search.guests;
+    if (typeof search.venueType === "string") result.venueType = search.venueType;
+    if (Array.isArray(search.cuisine)) result.cuisine = search.cuisine as string[];
+    if (typeof search.date === "string") result.date = search.date;
+    return result;
   },
   head: () => ({
     meta: [

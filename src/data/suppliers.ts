@@ -66,6 +66,9 @@ export interface Supplier {
   createdAt?: string;
 }
 
+/** Demo helper: returns an ISO date N days before now so "new joiner" tagging stays current. */
+const daysAgo = (n: number) => new Date(Date.now() - n * 24 * 60 * 60 * 1000).toISOString();
+
 export const suppliers: Supplier[] = [
   {
     id: "villa-cedars",
@@ -170,6 +173,7 @@ export const suppliers: Supplier[] = [
       "A versatile ensemble covering Arabic and international repertoire, The Nightingale Band moves seamlessly from a refined ceremony quartet to a full party band that keeps the floor moving until late.",
     services: ["Ceremony quartet", "Reception band", "DJ transition", "Sound system", "Custom song requests"],
     verified: false,
+    createdAt: daysAgo(4),
   },
   {
     id: "atelier-belle",
@@ -242,6 +246,7 @@ export const suppliers: Supplier[] = [
       "Cedar & Frames focuses on real, unposed moments. Ideal for couples who want a relaxed presence and a timeless, warm-toned gallery of their day.",
     services: ["8-hour coverage", "Edited gallery", "Print release", "Engagement add-on", "USB keepsake"],
     verified: false,
+    createdAt: daysAgo(11),
   },
 ];
 

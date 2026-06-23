@@ -1,10 +1,26 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Search, BadgeCheck, MessageSquareHeart, CalendarCheck, ArrowRight, Star } from "lucide-react";
+import { format } from "date-fns";
+import {
+  Search,
+  BadgeCheck,
+  MessageSquareHeart,
+  CalendarCheck,
+  ArrowRight,
+  Star,
+  CalendarIcon,
+} from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SupplierCard } from "@/components/SupplierCard";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -12,6 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 import { categories, suppliers, categoryImages } from "@/data/suppliers";
 
 export const Route = createFileRoute("/")({
@@ -55,12 +72,14 @@ function Home() {
   const [guests, setGuests] = useState("");
   const [venueType, setVenueType] = useState("");
   const [cuisine, setCuisine] = useState("");
+  const [date, setDate] = useState<Date>();
 
   const filterSearch = {
     ...(location && { region: location }),
     ...(guests && { guests }),
     ...(venueType && { venueType }),
     ...(cuisine && { cuisine }),
+    ...(date && { date: format(date, "yyyy-MM-dd") }),
   };
 
   return (
@@ -121,7 +140,7 @@ function Home() {
             <h2 className="font-serif text-lg font-semibold text-foreground">Find your perfect wedding setup</h2>
           </div>
 
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
             <div className="space-y-1.5">
               <Label htmlFor="location" className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                 Location
@@ -191,6 +210,35 @@ function Home() {
                   <SelectItem value="French">French</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Wedding Date
+              </Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !date && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {date ? format(date, "PPP") : <span>Pick a date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={setDate}
+                    initialFocus
+                    className="pointer-events-auto"
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
 

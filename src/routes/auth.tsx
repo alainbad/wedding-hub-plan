@@ -91,7 +91,7 @@ function AuthPage() {
         <div className="mb-6 text-center">
           <h1 className="font-serif text-2xl font-semibold text-foreground">Creative Portal</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Manage your profile, packages and customer leads.
+            Sign in to manage your profile, packages and customer leads.
           </p>
         </div>
 

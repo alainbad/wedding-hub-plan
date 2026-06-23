@@ -29,5 +29,6 @@ export function adaptSupplier(row: Tables<"suppliers">): Supplier {
     about: row.about,
     services: row.services ?? [],
     verified: row.verified,
+    createdAt: row.created_at,
   };
 }

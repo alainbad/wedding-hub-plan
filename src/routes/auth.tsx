@@ -80,6 +80,8 @@ function AuthPage() {
   };
 
 
+
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-secondary/30 px-4 py-12">
       <Link to="/" className="mb-8 flex items-baseline gap-1.5">

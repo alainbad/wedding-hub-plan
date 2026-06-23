@@ -212,23 +212,46 @@ function Home() {
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="cuisine" className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              <Label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                 Catering Cuisine
               </Label>
-              <Select value={cuisine} onValueChange={setCuisine}>
-                <SelectTrigger id="cuisine" className="w-full">
-                  <SelectValue placeholder="Select cuisine" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Lebanese">Lebanese</SelectItem>
-                  <SelectItem value="International">International</SelectItem>
-                  <SelectItem value="Italian">Italian</SelectItem>
-                  <SelectItem value="Fusion">Fusion</SelectItem>
-                  <SelectItem value="Mexican">Mexican</SelectItem>
-                  <SelectItem value="Mediterranean">Mediterranean</SelectItem>
-                  <SelectItem value="French">French</SelectItem>
-                </SelectContent>
-              </Select>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      selectedCuisines.length === 0 && "text-muted-foreground"
+                    )}
+                  >
+                    {selectedCuisines.length === 0 ? (
+                      <span>Select cuisines</span>
+                    ) : selectedCuisines.length === 1 ? (
+                      <span>{selectedCuisines[0]}</span>
+                    ) : (
+                      <span>{selectedCuisines[0]} +{selectedCuisines.length - 1} more</span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-56 p-0" align="start">
+                  <ScrollArea className="h-56 p-2">
+                    <div className="space-y-1">
+                      {cuisineOptions.map((option) => (
+                        <label
+                          key={option}
+                          className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
+                        >
+                          <Checkbox
+                            checked={selectedCuisines.includes(option)}
+                            onCheckedChange={() => toggleCuisine(option)}
+                          />
+                          <span>{option}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </ScrollArea>
+                </PopoverContent>
+              </Popover>
             </div>
 
             <div className="space-y-1.5">

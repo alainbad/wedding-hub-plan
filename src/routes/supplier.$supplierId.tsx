@@ -388,7 +388,67 @@ function SupplierDetail() {
               </li>
             ))}
           </ul>
+
+          {dbId && (
+            <>
+              <div className="mt-10 flex items-center justify-between">
+                <h2 className="font-serif text-2xl font-semibold text-foreground">
+                  Reviews
+                  {reviews.length > 0 && (
+                    <span className="ml-2 text-base font-normal text-muted-foreground">
+                      ({supplier.rating.toFixed(1)} · {reviews.length})
+                    </span>
+                  )}
+                </h2>
+                <Button variant="outline" size="sm" onClick={() => setReviewOpen(true)}>
+                  Write a review
+                </Button>
+              </div>
+
+              {reviews.length === 0 ? (
+                <p className="mt-4 text-sm text-muted-foreground">
+                  No reviews yet — be the first to leave one.
+                </p>
+              ) : (
+                <ul className="mt-4 space-y-4">
+                  {reviews.map((r) => (
+                    <li key={r.id} className="rounded-2xl border border-border bg-card p-5">
+                      <div className="flex items-center justify-between">
+                        <span className="font-medium text-foreground">{r.customer_name}</span>
+                        <span className="inline-flex items-center gap-0.5">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <Star
+                              key={i}
+                              className={cn(
+                                "h-4 w-4",
+                                i < r.rating
+                                  ? "fill-accent text-accent"
+                                  : "text-muted-foreground/30",
+                              )}
+                            />
+                          ))}
+                        </span>
+                      </div>
+                      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                        {r.review}
+                      </p>
+                      {r.reply && (
+                        <div className="mt-3 rounded-xl bg-muted/60 p-3 text-sm">
+                          <p className="font-medium text-foreground">Reply from {supplier.name}</p>
+                          <p className="mt-1 text-muted-foreground">{r.reply}</p>
+                        </div>
+                      )}
+                      <p className="mt-2 text-xs text-muted-foreground">
+                        {format(new Date(r.created_at), "PPP")}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </>
+          )}
         </div>
+
 
         {/* Booking card */}
         <aside className="lg:sticky lg:top-24 lg:self-start">

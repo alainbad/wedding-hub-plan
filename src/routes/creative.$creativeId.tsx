@@ -199,18 +199,25 @@ function CreativeDetail() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [location, setLocation] = useState("");
-  const [guests, setGuests] = useState("");
-  const [venueType, setVenueType] = useState("");
-  const [selectedCuisines, setSelectedCuisines] = useState<string[]>([]);
   const [weddingDate, setWeddingDate] = useState<Date>();
   const [notes, setNotes] = useState("");
   const [sending, setSending] = useState(false);
 
-  const toggleCuisine = (option: string) => {
-    setSelectedCuisines((prev) =>
-      prev.includes(option) ? prev.filter((c) => c !== option) : [...prev, option],
-    );
-  };
+  // Category-specific answers, keyed by field key.
+  const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
+
+  const setAnswer = (key: string, value: string | string[]) =>
+    setAnswers((prev) => ({ ...prev, [key]: value }));
+
+  const toggleMultiAnswer = (key: string, option: string) =>
+    setAnswers((prev) => {
+      const current = Array.isArray(prev[key]) ? (prev[key] as string[]) : [];
+      const next = current.includes(option)
+        ? current.filter((c) => c !== option)
+        : [...current, option];
+      return { ...prev, [key]: next };
+    });
+
 
   if (!staticCreative && isUuid && dbLoading) {
     return (

@@ -25,14 +25,21 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
   component: DashboardLayout,
 });
 
-const navItems = [
+type NavItem = {
+  to: "/dashboard" | "/dashboard/profile" | "/dashboard/services" | "/dashboard/portfolio" | "/dashboard/leads" | "/dashboard/subscription";
+  label: string;
+  icon: typeof LayoutDashboard;
+  exact?: boolean;
+};
+
+const navItems: NavItem[] = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/dashboard/profile", label: "My Profile", icon: Store },
   { to: "/dashboard/services", label: "Services & Packages", icon: Package },
   { to: "/dashboard/portfolio", label: "Portfolio", icon: Images },
   { to: "/dashboard/leads", label: "Leads & Requests", icon: Inbox },
   { to: "/dashboard/subscription", label: "Subscription", icon: CreditCard },
-] as const;
+];
 
 const soonItems = [
   { label: "Availability", icon: CalendarDays },

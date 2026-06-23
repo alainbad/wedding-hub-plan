@@ -273,7 +273,7 @@ export const suppliers: Supplier[] = [
     rating: 4.7,
     reviews: 38,
     priceFrom: 350,
-    image: venueImg,
+    image: carRentalsImg,
     tagline: "Vintage & luxury wedding cars with chauffeur",
     about:
       "Beirut Bridal Cars supplies polished classic and modern luxury vehicles for wedding day transport, complete with uniformed chauffeurs and ribbon décor.",
@@ -291,7 +291,7 @@ export const suppliers: Supplier[] = [
     rating: 4.6,
     reviews: 29,
     priceFrom: 120,
-    image: heroImg,
+    image: travelAccommodationImg,
     tagline: "Boutique guesthouses & honeymoon suites",
     about:
       "A curated collection of mountain and seaside guesthouses reserved for wedding parties and honeymooners, with group booking rates and late checkout.",

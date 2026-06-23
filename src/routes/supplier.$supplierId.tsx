@@ -587,8 +587,8 @@ function SupplierDetail() {
             <Button variant="outline" onClick={() => setQuoteOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={submitQuote}>
-              <Send className="mr-2 h-4 w-4" /> Send to supplier
+            <Button onClick={submitQuote} disabled={sending}>
+              <Send className="mr-2 h-4 w-4" /> {sending ? "Sending…" : "Send to supplier"}
             </Button>
           </DialogFooter>
         </DialogContent>

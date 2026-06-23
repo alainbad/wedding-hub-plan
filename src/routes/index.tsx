@@ -31,7 +31,6 @@ import {
 import { cn } from "@/lib/utils";
 import { categories, suppliers, categoryImages } from "@/data/suppliers";
 
-
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [

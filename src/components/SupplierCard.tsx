@@ -36,6 +36,8 @@ export function SupplierCard({ supplier }: { supplier: Supplier }) {
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
           <MapPin className="h-3.5 w-3.5" />
           {supplier.city}, {supplier.region}
+          <span className="mx-1 h-1 w-1 rounded-full bg-muted-foreground/50" />
+          <span className="text-accent">{supplier.categoryLabel}</span>
         </div>
         <h3 className="mt-1.5 flex items-center gap-1.5 font-serif text-xl font-semibold leading-tight text-foreground">
           {supplier.name}

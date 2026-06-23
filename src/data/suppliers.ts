@@ -6,6 +6,8 @@ import photographyImg from "@/assets/photography.jpg";
 import entertainmentImg from "@/assets/entertainment.jpg";
 import beautyImg from "@/assets/beauty.jpg";
 import cakeImg from "@/assets/cake.jpg";
+import carRentalsImg from "@/assets/car-rentals.jpg";
+import travelAccommodationImg from "@/assets/travel-accommodation.jpg";
 
 export const categoryImages = {
   hero: heroImg,
@@ -16,8 +18,8 @@ export const categoryImages = {
   entertainment: entertainmentImg,
   beauty: beautyImg,
   cake: cakeImg,
-  carRentals: venueImg,
-  travelAccommodation: heroImg,
+  carRentals: carRentalsImg,
+  travelAccommodation: travelAccommodationImg,
   eventPlanners: cateringImg,
   receptionOrganizers: entertainmentImg,
 };
@@ -51,8 +53,8 @@ export const categories: Category[] = [
   { slug: "entertainment", name: "Entertainment", tagline: "Bands, DJs & performers", image: entertainmentImg, count: 37 },
   { slug: "beauty", name: "Hair & Makeup", tagline: "Bridal beauty artists", image: beautyImg, count: 59 },
   { slug: "cakes", name: "Cakes & Sweets", tagline: "Patisserie & dessert tables", image: cakeImg, count: 29 },
-  { slug: "car-rentals", name: "Car Rentals", tagline: "Luxury cars & transport for your big day", image: venueImg, count: 1 },
-  { slug: "travel-accommodation", name: "Travel and Accommodation", tagline: "Hotels, guest houses & honeymoon stays", image: heroImg, count: 1 },
+  { slug: "car-rentals", name: "Car Rentals", tagline: "Luxury cars & transport for your big day", image: carRentalsImg, count: 1 },
+  { slug: "travel-accommodation", name: "Travel and Accommodation", tagline: "Hotels, guest houses & honeymoon stays", image: travelAccommodationImg, count: 1 },
   { slug: "event-planners", name: "Event Planners", tagline: "Full-service wedding planning & coordination", image: cateringImg, count: 1 },
   { slug: "reception-organizers", name: "Reception Organizers", tagline: "Reception setup, hosting & entertainment flow", image: entertainmentImg, count: 1 },
 ];
@@ -271,7 +273,7 @@ export const suppliers: Supplier[] = [
     rating: 4.7,
     reviews: 38,
     priceFrom: 350,
-    image: venueImg,
+    image: carRentalsImg,
     tagline: "Vintage & luxury wedding cars with chauffeur",
     about:
       "Beirut Bridal Cars supplies polished classic and modern luxury vehicles for wedding day transport, complete with uniformed chauffeurs and ribbon décor.",
@@ -289,7 +291,7 @@ export const suppliers: Supplier[] = [
     rating: 4.6,
     reviews: 29,
     priceFrom: 120,
-    image: heroImg,
+    image: travelAccommodationImg,
     tagline: "Boutique guesthouses & honeymoon suites",
     about:
       "A curated collection of mountain and seaside guesthouses reserved for wedding parties and honeymooners, with group booking rates and late checkout.",

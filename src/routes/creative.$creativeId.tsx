@@ -85,6 +85,15 @@ function creativeEmail(creative: Creative) {
   return `${creative.id}@weddinghub-lebanon.com`;
 }
 
+// Build a WhatsApp chat link to book an appointment with the creative.
+// Uses the creative's WhatsApp number when available, otherwise a demo line.
+function creativeWhatsAppLink(creative: Creative) {
+  const number = (creative.whatsapp || "+961 70 000 000").replace(/[^\d]/g, "");
+  const text = `Hello ${creative.name}, I'd like to book an appointment to discuss my wedding. Could we arrange a time?`;
+  return `https://wa.me/${number}?text=${encodeURIComponent(text)}`;
+}
+
+
 const cuisineOptions = [
   "Lebanese",
   "International",

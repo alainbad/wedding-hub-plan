@@ -84,6 +84,19 @@ function SuppliersPage() {
     return list;
   }, [allSuppliers, category, region, query, sort]);
 
+  const { newJoiners, popular } = useMemo(() => {
+    const THIRTY_DAYS = 1000 * 60 * 60 * 24 * 30;
+    const now = Date.now();
+    const isNew = (s: (typeof filtered)[number]) =>
+      s.createdAt ? now - new Date(s.createdAt).getTime() < THIRTY_DAYS : false;
+    const newOnes = filtered.filter(isNew);
+    const rest = filtered
+      .filter((s) => !isNew(s))
+      .slice()
+      .sort((a, b) => b.reviews - a.reviews || b.rating - a.rating);
+    return { newJoiners: newOnes, popular: rest };
+  }, [filtered]);
+
   const activeCategory = categories.find((c) => c.slug === category);
 
   return (

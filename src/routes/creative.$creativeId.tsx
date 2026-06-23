@@ -523,6 +523,14 @@ function CreativeDetail() {
             >
               <FileText className="h-4 w-4" /> Request a quote
             </button>
+            <a
+              href={creativeWhatsAppLink(creative)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-[#25D366]/90"
+            >
+              <CalendarPlus className="h-4 w-4" /> Book an appointment
+            </a>
             <div className="mt-3 flex gap-3">
               <button
                 type="button"

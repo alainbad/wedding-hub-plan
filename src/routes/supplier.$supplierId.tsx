@@ -48,6 +48,8 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { getSupplier, suppliers, type Supplier } from "@/data/suppliers";
+import { supabase } from "@/integrations/supabase/client";
+import { adaptSupplier } from "@/lib/supplier-adapter";
 
 // Deterministically derive "unavailable" days for a supplier so the calendar
 // shows a stable set of booked dates without a backend.

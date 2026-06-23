@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.recalc_supplier_rating() FROM PUBLIC, anon, authenticated;

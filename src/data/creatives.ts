@@ -8,6 +8,8 @@ import beautyImg from "@/assets/beauty.jpg";
 import cakeImg from "@/assets/cake.jpg";
 import carRentalsImg from "@/assets/car-rentals.jpg";
 import travelAccommodationImg from "@/assets/travel-accommodation.jpg";
+import eventPlannersImg from "@/assets/event-planners.jpg";
+import receptionOrganizersImg from "@/assets/reception-organizers.jpg";
 
 export const categoryImages = {
   hero: heroImg,
@@ -20,8 +22,8 @@ export const categoryImages = {
   cake: cakeImg,
   carRentals: carRentalsImg,
   travelAccommodation: travelAccommodationImg,
-  eventPlanners: cateringImg,
-  receptionOrganizers: entertainmentImg,
+  eventPlanners: eventPlannersImg,
+  receptionOrganizers: receptionOrganizersImg,
 };
 
 export type CategorySlug =
@@ -55,8 +57,8 @@ export const categories: Category[] = [
   { slug: "cakes", name: "Cakes & Sweets", tagline: "Patisserie & dessert tables", image: cakeImg, count: 29 },
   { slug: "car-rentals", name: "Car Rentals", tagline: "Luxury cars & transport for your big day", image: carRentalsImg, count: 1 },
   { slug: "travel-accommodation", name: "Travel and Accommodation", tagline: "Hotels, guest houses & honeymoon stays", image: travelAccommodationImg, count: 1 },
-  { slug: "event-planners", name: "Event Planners", tagline: "Full-service wedding planning & coordination", image: cateringImg, count: 1 },
-  { slug: "reception-organizers", name: "Reception Organizers", tagline: "Reception setup, hosting & entertainment flow", image: entertainmentImg, count: 1 },
+  { slug: "event-planners", name: "Event Planners", tagline: "Full-service wedding planning & coordination", image: eventPlannersImg, count: 1 },
+  { slug: "reception-organizers", name: "Reception Organizers", tagline: "Reception setup, hosting & entertainment flow", image: receptionOrganizersImg, count: 1 },
 ];
 
 export type Tier = "Featured" | "Premium" | "Elite";
@@ -310,7 +312,7 @@ export const creatives: Creative[] = [
     rating: 4.9,
     reviews: 71,
     priceFrom: 3200,
-    image: cateringImg,
+    image: eventPlannersImg,
     tagline: "End-to-end wedding planning & design",
     about:
       "Moments by Maya coordinates every detail from venue selection to vendor management, timeline planning and on-the-day execution for a stress-free wedding.",
@@ -328,7 +330,7 @@ export const creatives: Creative[] = [
     rating: 4.8,
     reviews: 46,
     priceFrom: 2200,
-    image: entertainmentImg,
+    image: receptionOrganizersImg,
     tagline: "Reception flow, hosting & party curation",
     about:
       "Sahretna Nights shapes the energy of your reception with professional hosting, crowd-reading DJs, interactive games and seamless transition moments.",

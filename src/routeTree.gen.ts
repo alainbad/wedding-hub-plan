@@ -20,6 +20,7 @@ import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authe
 import { Route as AuthenticatedDashboardServicesRouteImport } from './routes/_authenticated/dashboard.services'
 import { Route as AuthenticatedDashboardProfileRouteImport } from './routes/_authenticated/dashboard.profile'
 import { Route as AuthenticatedDashboardPortfolioRouteImport } from './routes/_authenticated/dashboard.portfolio'
+import { Route as AuthenticatedDashboardLeadsRouteImport } from './routes/_authenticated/dashboard.leads'
 
 const SuppliersRoute = SuppliersRouteImport.update({
   id: '/suppliers',
@@ -79,6 +80,12 @@ const AuthenticatedDashboardPortfolioRoute =
     path: '/portfolio',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
+const AuthenticatedDashboardLeadsRoute =
+  AuthenticatedDashboardLeadsRouteImport.update({
+    id: '/leads',
+    path: '/leads',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -87,6 +94,7 @@ export interface FileRoutesByFullPath {
   '/suppliers': typeof SuppliersRoute
   '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/supplier/$supplierId': typeof SupplierSupplierIdRoute
+  '/dashboard/leads': typeof AuthenticatedDashboardLeadsRoute
   '/dashboard/portfolio': typeof AuthenticatedDashboardPortfolioRoute
   '/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
   '/dashboard/services': typeof AuthenticatedDashboardServicesRoute
@@ -98,6 +106,7 @@ export interface FileRoutesByTo {
   '/pricing': typeof PricingRoute
   '/suppliers': typeof SuppliersRoute
   '/supplier/$supplierId': typeof SupplierSupplierIdRoute
+  '/dashboard/leads': typeof AuthenticatedDashboardLeadsRoute
   '/dashboard/portfolio': typeof AuthenticatedDashboardPortfolioRoute
   '/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
   '/dashboard/services': typeof AuthenticatedDashboardServicesRoute
@@ -112,6 +121,7 @@ export interface FileRoutesById {
   '/suppliers': typeof SuppliersRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/supplier/$supplierId': typeof SupplierSupplierIdRoute
+  '/_authenticated/dashboard/leads': typeof AuthenticatedDashboardLeadsRoute
   '/_authenticated/dashboard/portfolio': typeof AuthenticatedDashboardPortfolioRoute
   '/_authenticated/dashboard/profile': typeof AuthenticatedDashboardProfileRoute
   '/_authenticated/dashboard/services': typeof AuthenticatedDashboardServicesRoute
@@ -126,6 +136,7 @@ export interface FileRouteTypes {
     | '/suppliers'
     | '/dashboard'
     | '/supplier/$supplierId'
+    | '/dashboard/leads'
     | '/dashboard/portfolio'
     | '/dashboard/profile'
     | '/dashboard/services'
@@ -137,6 +148,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/suppliers'
     | '/supplier/$supplierId'
+    | '/dashboard/leads'
     | '/dashboard/portfolio'
     | '/dashboard/profile'
     | '/dashboard/services'
@@ -150,6 +162,7 @@ export interface FileRouteTypes {
     | '/suppliers'
     | '/_authenticated/dashboard'
     | '/supplier/$supplierId'
+    | '/_authenticated/dashboard/leads'
     | '/_authenticated/dashboard/portfolio'
     | '/_authenticated/dashboard/profile'
     | '/_authenticated/dashboard/services'
@@ -244,10 +257,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardPortfolioRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
+    '/_authenticated/dashboard/leads': {
+      id: '/_authenticated/dashboard/leads'
+      path: '/leads'
+      fullPath: '/dashboard/leads'
+      preLoaderRoute: typeof AuthenticatedDashboardLeadsRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
   }
 }
 
 interface AuthenticatedDashboardRouteChildren {
+  AuthenticatedDashboardLeadsRoute: typeof AuthenticatedDashboardLeadsRoute
   AuthenticatedDashboardPortfolioRoute: typeof AuthenticatedDashboardPortfolioRoute
   AuthenticatedDashboardProfileRoute: typeof AuthenticatedDashboardProfileRoute
   AuthenticatedDashboardServicesRoute: typeof AuthenticatedDashboardServicesRoute
@@ -256,6 +277,7 @@ interface AuthenticatedDashboardRouteChildren {
 
 const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
   {
+    AuthenticatedDashboardLeadsRoute: AuthenticatedDashboardLeadsRoute,
     AuthenticatedDashboardPortfolioRoute: AuthenticatedDashboardPortfolioRoute,
     AuthenticatedDashboardProfileRoute: AuthenticatedDashboardProfileRoute,
     AuthenticatedDashboardServicesRoute: AuthenticatedDashboardServicesRoute,

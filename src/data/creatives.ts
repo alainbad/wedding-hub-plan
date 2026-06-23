@@ -61,7 +61,7 @@ export const categories: Category[] = [
 
 export type Tier = "Featured" | "Premium" | "Elite";
 
-export interface Supplier {
+export interface Creative {
   id: string;
   name: string;
   category: CategorySlug;
@@ -83,7 +83,7 @@ export interface Supplier {
 /** Demo helper: returns an ISO date N days before now so "new joiner" tagging stays current. */
 const daysAgo = (n: number) => new Date(Date.now() - n * 24 * 60 * 60 * 1000).toISOString();
 
-export const suppliers: Supplier[] = [
+export const creatives: Creative[] = [
   {
     id: "villa-cedars",
     name: "Villa des Cèdres",
@@ -342,6 +342,6 @@ export const tierBlurb: Record<Tier, string> = {
   Elite: "Top of search, homepage features & badge",
 };
 
-export function getSupplier(id: string) {
-  return suppliers.find((s) => s.id === id);
+export function getCreative(id: string) {
+  return creatives.find((s) => s.id === id);
 }

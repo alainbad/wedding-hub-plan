@@ -84,10 +84,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "WeddingHub Lebanon — Find & Book Trusted Wedding Suppliers" },
-      { name: "description", content: "Discover Lebanon's finest wedding venues, photographers, florists, caterers and more. Browse verified suppliers and plan your day with confidence." },
+      { title: "WeddingHub Lebanon — Find & Book Trusted Wedding Creatives" },
+      { name: "description", content: "Discover Lebanon's finest wedding venues, photographers, florists, caterers and more. Browse verified creatives and plan your day with confidence." },
       { name: "author", content: "WeddingHub Lebanon" },
-      { property: "og:title", content: "WeddingHub Lebanon — Find & Book Trusted Wedding Suppliers" },
+      { property: "og:title", content: "WeddingHub Lebanon — Find & Book Trusted Wedding Creatives" },
       { property: "og:description", content: "Discover Lebanon's finest wedding venues, photographers, florists, caterers and more." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

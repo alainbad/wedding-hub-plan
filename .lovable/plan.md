@@ -1,65 +1,33 @@
-# Wedding Hub — Supplier Dashboard (MVP)
+Goal: replace every user-facing occurrence of "Suppliers" with "Creatives" across the site (navigation, headings, URLs, component/file names, page copy) while preserving the existing database schema so no migrations or data changes are required.
 
-This delivers the MVP scope you defined: Supplier Authentication, Dashboard Home, My Profile, Services & Packages, Portfolio, Lead Inbox, Subscription Page, and the Admin Approval System. Everything is wired to a real backend so approved supplier info flows automatically onto the existing public website.
+Scope of changes
+----------------
+1. Public routes & URLs
+   - `/suppliers` → `/creatives`
+   - `/supplier/$supplierId` → `/creative/$creativeId`
+   - TanStack file-based routing requires renaming the route files, which auto-regenerates `routeTree.gen.ts`.
 
-## Backend (Lovable Cloud)
+2. Source files to rename
+   - `src/routes/suppliers.tsx` → `src/routes/creatives.tsx`
+   - `src/routes/supplier.$supplierId.tsx` → `src/routes/creative.$creativeId.tsx`
+   - `src/components/SupplierCard.tsx` → `src/components/CreativeCard.tsx`
+   - `src/data/suppliers.ts` → `src/data/creatives.ts`
+   - `src/lib/supplier-adapter.ts` → `src/lib/creative-adapter.ts`
+   - `src/lib/supplier-constants.ts` → `src/lib/creative-constants.ts`
+   - `src/hooks/use-my-supplier.ts` → `src/hooks/use-my-creative.ts`
 
-I'll enable Lovable Cloud (database + auth + storage + server logic — no external accounts needed).
+3. Code symbols & text to update
+   - Component names: `SupplierCard` → `CreativeCard`
+   - Type names: `Supplier` → `Creative`, `SupplierRow` → `CreativeRow`
+   - Variable/function names: `suppliers` → `creatives`, `supplier` → `creative`, `getSupplier` → `getCreative`, `adaptSupplier` → `adaptCreative`, `useMySupplier` → `useMyCreative`
+   - UI copy: page titles, meta tags, headings, buttons, footer links, CTAs (e.g. "Browse Wedding Suppliers" → "Browse Wedding Creatives", "Supplier Portal" → "Creative Portal")
+   - Query keys and internal labels for consistency.
 
-### Auth
-- Email/password sign up + login for suppliers.
-- A separate `user_roles` table (`supplier`, `admin`) — roles are never stored on the profile (security best practice). A `has_role()` check gates admin features.
+4. What will NOT change
+   - Database schema: the `suppliers` table, `supplier_id` columns, `supplier_status` enum, `app_role` value `supplier`, and Supabase-generated `src/integrations/supabase/types.ts` will remain as-is. The internal data model still refers to suppliers; only the public website brand term becomes "Creatives".
+   - Existing migrations under `supabase/migrations/` will not be edited.
 
-### Tables
-```text
-suppliers      profile/business info, status (draft|pending|approved|rejected|
-               suspended), subscription_plan, owner user_id, ratings, contact,
-               region, pricing, social links
-services       supplier_id, name, description, price, duration
-packages       supplier_id, name, price, description, includes[]
-portfolio      supplier_id, media_url, media_type, caption, is_cover, sort_order
-leads          supplier_id, customer_name, event_date, guest_count, budget,
-               location, message, phone, email, status (new|contacted|quoted|
-               booked|lost), notes
-reviews        supplier_id, customer_name, rating, review (read-only in MVP)
-```
-- `portfolio-media` storage bucket for image/video/PDF uploads.
-
-### Approval flow (key requirement)
-- The public site reads **only `status = 'approved'`** suppliers.
-- Any supplier edit sets `status = 'pending'` (edits stay private until an admin re-approves). I'll keep an `approved_*` published snapshot vs. the editable draft so the live listing doesn't change while a re-edit is pending.
-- Admin approves/rejects/suspends to flip status to live.
-
-### Security (RLS)
-- Suppliers can read/write only their own rows (`auth.uid() = user_id`).
-- Public/anon: SELECT only on approved suppliers and their child records.
-- Admins (via `has_role`): full management access.
-- Leads: a public can INSERT (customer inquiry); only the owning supplier + admins can read.
-
-## Supplier portal (`/dashboard/*`, auth-gated under `_authenticated`)
-
-- **Sidebar layout** (shadcn sidebar): Dashboard, My Profile, Services & Packages, Portfolio, Leads, Subscription, Logout. (Availability, Reviews, Promotions, Settings shown as “coming soon” placeholders to keep MVP tight unless you want them now.)
-- **Dashboard Home** — welcome, status cards (profile status, plan, monthly leads, profile views, rating), quick actions.
-- **My Profile** — business info, contact, pricing, service areas, social links. Save Draft / Submit for Approval.
-- **Services & Packages** — CRUD services; package builder (name, price, includes list); add/edit/delete.
-- **Portfolio** — upload images/videos/PDF to storage, set cover, captions, delete, reorder; plan-based limits.
-- **Leads & Requests** — inbox with statuses (New→Contacted→Quoted→Booked→Lost), notes, archive.
-- **Subscription** — plan comparison (Featured $29 / Premium $79 / Elite $199) and select/upgrade (records choice; real payments out of MVP scope).
-
-## Admin approval system (`/admin/*`, admin-gated)
-- Supplier queue: approve / reject / suspend / delete, assign subscription plan.
-- View all leads + basic stats.
-
-## Public site integration
-- The existing home/suppliers/supplier pages switch from the static `src/data/suppliers.ts` mock to live approved data from the database (server functions for SSR-safe reads). The static file becomes the seed for a migration so the site isn't empty on day one.
-
-## Technical notes
-- Server functions (`createServerFn`) for all DB access; public reads via publishable-key client + narrow `anon` SELECT policies; admin/privileged writes verified server-side.
-- Auth-gated routes under `src/routes/_authenticated/`; public routes stay top-level.
-- Seed data (current mock suppliers) inserted via migration as pre-approved.
-
-## Out of MVP (future)
-Availability calendar, Reviews replies/reporting, Promotions, full Settings, real payment processing, SMS/WhatsApp notifications.
-
----
-This is a big build. On approval I'll start by enabling Cloud and creating the schema, then build the portal, then the admin/approval layer and public-site wiring.
+5. Verification
+   - Run `tsc --noEmit` to confirm type safety.
+   - Restart the dev server so TanStack regenerates `routeTree.gen.ts`.
+   - Use Playwright to verify `/creatives` loads, `/creative/<id>` works, and no "Supplier" text remains in public UI.

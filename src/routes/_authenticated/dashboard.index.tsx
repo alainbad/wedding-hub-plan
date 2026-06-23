@@ -16,9 +16,9 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth, useIsAdmin } from "@/hooks/use-auth";
-import { useMySupplier } from "@/hooks/use-my-supplier";
+import { useMyCreative } from "@/hooks/use-my-creative";
 import { bootstrapAdmin } from "@/lib/admin-bootstrap.functions";
-import { STATUS_LABEL } from "@/lib/supplier-constants";
+import { STATUS_LABEL } from "@/lib/creative-constants";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -44,22 +44,22 @@ function StatusBadge({ status }: { status: string }) {
 function DashboardHome() {
   const { user } = useAuth();
   const { isAdmin } = useIsAdmin();
-  const { data: supplier, isLoading } = useMySupplier();
+  const { data: creative, isLoading } = useMyCreative();
   const [claiming, setClaiming] = useState(false);
 
   const { data: leadStats } = useQuery({
-    queryKey: ["lead-stats", supplier?.id],
-    enabled: !!supplier?.id,
+    queryKey: ["lead-stats", creative?.id],
+    enabled: !!creative?.id,
     queryFn: async () => {
       const startOfMonth = new Date();
       startOfMonth.setDate(1);
       startOfMonth.setHours(0, 0, 0, 0);
       const [{ count: total }, { count: monthly }] = await Promise.all([
-        supabase.from("leads").select("*", { count: "exact", head: true }).eq("supplier_id", supplier!.id),
+        supabase.from("leads").select("*", { count: "exact", head: true }).eq("supplier_id", creative!.id),
         supabase
           .from("leads")
           .select("*", { count: "exact", head: true })
-          .eq("supplier_id", supplier!.id)
+          .eq("supplier_id", creative!.id)
           .gte("created_at", startOfMonth.toISOString()),
       ]);
       return { total: total ?? 0, monthly: monthly ?? 0 };
@@ -83,7 +83,7 @@ function DashboardHome() {
     }
   };
 
-  if (isLoading || !supplier) {
+  if (isLoading || !creative) {
     return (
       <div className="flex h-64 items-center justify-center">
         <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
@@ -91,14 +91,14 @@ function DashboardHome() {
     );
   }
 
-  const name = supplier.company_name || user?.email?.split("@")[0] || "there";
+  const name = creative.company_name || user?.email?.split("@")[0] || "there";
 
   const cards = [
-    { label: "Profile Status", value: STATUS_LABEL[supplier.status] ?? supplier.status, icon: BadgeCheck },
-    { label: "Current Plan", value: supplier.subscription_plan, icon: Star },
+    { label: "Profile Status", value: STATUS_LABEL[creative.status] ?? creative.status, icon: BadgeCheck },
+    { label: "Current Plan", value: creative.subscription_plan, icon: Star },
     { label: "Monthly Leads", value: String(leadStats?.monthly ?? 0), icon: Inbox },
-    { label: "Profile Views", value: String(supplier.profile_views), icon: Eye },
-    { label: "Rating", value: supplier.rating ? `${supplier.rating.toFixed(1)} ★` : "—", icon: Star },
+    { label: "Profile Views", value: String(creative.profile_views), icon: Eye },
+    { label: "Rating", value: creative.rating ? `${creative.rating.toFixed(1)} ★` : "—", icon: Star },
   ];
 
   const actions = [
@@ -115,10 +115,10 @@ function DashboardHome() {
           <h1 className="font-serif text-2xl font-semibold text-foreground sm:text-3xl">Welcome, {name}</h1>
           <p className="mt-1 text-sm text-muted-foreground">Here's an overview of your business activity.</p>
         </div>
-        <StatusBadge status={supplier.status} />
+        <StatusBadge status={creative.status} />
       </div>
 
-      {(supplier.status === "draft" || supplier.status === "rejected") && (
+      {(creative.status === "draft" || creative.status === "rejected") && (
         <Card className="flex flex-wrap items-center justify-between gap-3 border-amber-500/30 bg-amber-500/5 p-4">
           <div className="flex items-start gap-3">
             <CircleAlert className="mt-0.5 h-5 w-5 text-amber-600" />
@@ -168,7 +168,7 @@ function DashboardHome() {
             <div>
               <p className="text-sm font-medium text-foreground">Platform administration</p>
               <p className="text-sm text-muted-foreground">
-                The first account can claim admin access to review &amp; approve suppliers.
+                The first account can claim admin access to review &amp; approve creatives.
               </p>
             </div>
           </div>

@@ -3,13 +3,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./use-auth";
 import type { Tables } from "@/integrations/supabase/types";
 
-export type SupplierRow = Tables<"suppliers">;
+export type CreativeRow = Tables<"suppliers">;
 
 async function fetchOrCreate(
   userId: string,
   email: string,
   companyName: string,
-): Promise<SupplierRow> {
+): Promise<CreativeRow> {
   const { data, error } = await supabase
     .from("suppliers")
     .select("*")
@@ -27,10 +27,10 @@ async function fetchOrCreate(
   return created;
 }
 
-export function useMySupplier() {
+export function useMyCreative() {
   const { user } = useAuth();
   return useQuery({
-    queryKey: ["my-supplier", user?.id],
+    queryKey: ["my-creative", user?.id],
     enabled: !!user,
     queryFn: () =>
       fetchOrCreate(

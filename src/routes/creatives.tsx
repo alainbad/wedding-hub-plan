@@ -4,65 +4,77 @@ import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { SupplierCard } from "@/components/SupplierCard";
-import { categories, suppliers, type CategorySlug } from "@/data/suppliers";
+import { CreativeCard } from "@/components/CreativeCard";
+import { categories, creatives, type CategorySlug } from "@/data/creatives";
 import { supabase } from "@/integrations/supabase/client";
-import { adaptSupplier } from "@/lib/supplier-adapter";
+import { adaptCreative } from "@/lib/creative-adapter";
 import { cn } from "@/lib/utils";
 
-interface SupplierSearch {
+interface CreativeSearch {
   category?: CategorySlug;
+  region?: string;
+  guests?: string;
+  venueType?: string;
+  cuisine?: string[];
+  date?: string;
 }
 
 const validCategories = new Set(categories.map((c) => c.slug));
 
-export const Route = createFileRoute("/suppliers")({
-  validateSearch: (search: Record<string, unknown>): SupplierSearch => {
+export const Route = createFileRoute("/creatives")({
+  validateSearch: (search: Record<string, unknown>): CreativeSearch => {
+    const result: CreativeSearch = {};
     const category = search.category as string | undefined;
-    return category && validCategories.has(category as CategorySlug)
-      ? { category: category as CategorySlug }
-      : {};
+    if (category && validCategories.has(category as CategorySlug)) {
+      result.category = category as CategorySlug;
+    }
+    if (typeof search.region === "string") result.region = search.region;
+    if (typeof search.guests === "string") result.guests = search.guests;
+    if (typeof search.venueType === "string") result.venueType = search.venueType;
+    if (Array.isArray(search.cuisine)) result.cuisine = search.cuisine as string[];
+    if (typeof search.date === "string") result.date = search.date;
+    return result;
   },
   head: () => ({
     meta: [
-      { title: "Browse Wedding Suppliers in Lebanon — WeddingHub" },
+      { title: "Browse Wedding Creatives in Lebanon — WeddingHub" },
       {
         name: "description",
         content:
           "Browse and filter trusted wedding venues, photographers, florists, caterers and more across every region of Lebanon.",
       },
-      { property: "og:title", content: "Browse Wedding Suppliers — WeddingHub Lebanon" },
+      { property: "og:title", content: "Browse Wedding Creatives — WeddingHub Lebanon" },
     ],
   }),
-  component: SuppliersPage,
+  component: CreativesPage,
 });
 
 const regions = ["All regions", "Beirut", "Mount Lebanon", "North Lebanon", "Bekaa"];
 const sortOptions = ["Recommended", "Top rated", "Price: low to high"] as const;
 
-function SuppliersPage() {
+function CreativesPage() {
   const { category } = Route.useSearch();
-  const navigate = useNavigate({ from: "/suppliers" });
+  const navigate = useNavigate({ from: "/creatives" });
   const [query, setQuery] = useState("");
   const [region, setRegion] = useState("All regions");
   const [sort, setSort] = useState<(typeof sortOptions)[number]>("Recommended");
 
-  const { data: dbSuppliers = [] } = useQuery({
-    queryKey: ["approved-suppliers"],
+  const { data: dbCreatives = [] } = useQuery({
+    queryKey: ["approved-creatives"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("suppliers")
         .select("*")
         .eq("status", "approved");
       if (error) throw error;
-      return data.map(adaptSupplier);
+      return data.map(adaptCreative);
     },
   });
 
-  const allSuppliers = useMemo(() => [...dbSuppliers, ...suppliers], [dbSuppliers]);
+  const allCreatives = useMemo(() => [...dbCreatives, ...creatives], [dbCreatives]);
 
   const filtered = useMemo(() => {
-    let list = allSuppliers.slice();
+    let list = allCreatives.slice();
     if (category) list = list.filter((s) => s.category === category);
     if (region !== "All regions") list = list.filter((s) => s.region === region);
     if (query.trim()) {
@@ -82,7 +94,7 @@ function SuppliersPage() {
       list.sort((a, b) => order[a.tier] - order[b.tier]);
     }
     return list;
-  }, [allSuppliers, category, region, query, sort]);
+  }, [allCreatives, category, region, query, sort]);
 
   const { newJoiners, popular } = useMemo(() => {
     const THIRTY_DAYS = 1000 * 60 * 60 * 24 * 30;
@@ -110,10 +122,10 @@ function SuppliersPage() {
             {activeCategory ? activeCategory.tagline : "Wedding directory"}
           </p>
           <h1 className="mt-2 font-serif text-3xl font-semibold text-foreground sm:text-4xl">
-            {activeCategory ? activeCategory.name : "All suppliers"}
+            {activeCategory ? activeCategory.name : "All creatives"}
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            {filtered.length} {filtered.length === 1 ? "supplier" : "suppliers"} available
+            {filtered.length} {filtered.length === 1 ? "creative" : "suppliers"} available
           </p>
 
           {/* Category pills */}
@@ -198,7 +210,7 @@ function SuppliersPage() {
                 </div>
                 <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                   {newJoiners.map((s) => (
-                    <SupplierCard key={s.id} supplier={s} />
+                    <CreativeCard key={s.id} creative={s} />
                   ))}
                 </div>
               </div>
@@ -207,14 +219,14 @@ function SuppliersPage() {
             {popular.length > 0 && (
               <div>
                 <div className="mb-5 flex items-center gap-3">
-                  <h2 className="font-serif text-2xl font-semibold text-foreground">Popular suppliers</h2>
+                  <h2 className="font-serif text-2xl font-semibold text-foreground">Popular creatives</h2>
                   <span className="rounded-full bg-primary/10 px-3 py-0.5 text-xs font-medium text-primary">
                     Most loved
                   </span>
                 </div>
                 <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                   {popular.map((s) => (
-                    <SupplierCard key={s.id} supplier={s} />
+                    <CreativeCard key={s.id} creative={s} />
                   ))}
                 </div>
               </div>
@@ -223,7 +235,7 @@ function SuppliersPage() {
         ) : (
           <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border py-20 text-center">
             <SlidersHorizontal className="h-8 w-8 text-muted-foreground" />
-            <h3 className="mt-4 font-serif text-xl font-semibold text-foreground">No suppliers found</h3>
+            <h3 className="mt-4 font-serif text-xl font-semibold text-foreground">No creatives found</h3>
             <p className="mt-1 text-sm text-muted-foreground">Try adjusting your filters or search.</p>
             <button
               type="button"

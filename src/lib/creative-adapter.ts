@@ -1,4 +1,4 @@
-import { categoryImages, type Supplier, type CategorySlug } from "@/data/suppliers";
+import { categoryImages, type Creative, type CategorySlug } from "@/data/creatives";
 import type { Tables } from "@/integrations/supabase/types";
 
 const fallbackByCategory: Record<string, string> = {
@@ -15,11 +15,11 @@ const fallbackByCategory: Record<string, string> = {
   "reception-organizers": categoryImages.receptionOrganizers,
 };
 
-/** Map a database supplier row to the public-facing Supplier shape. */
-export function adaptSupplier(row: Tables<"suppliers">): Supplier {
+/** Map a database creative row to the public-facing Creative shape. */
+export function adaptCreative(row: Tables<"suppliers">): Creative {
   return {
     id: row.id,
-    name: row.company_name || "Supplier",
+    name: row.company_name || "Creative",
     category: row.category as CategorySlug,
     categoryLabel: row.category_label,
     city: row.city,

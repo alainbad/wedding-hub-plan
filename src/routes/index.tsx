@@ -1,10 +1,26 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Search, BadgeCheck, MessageSquareHeart, CalendarCheck, ArrowRight, Star } from "lucide-react";
+import { format } from "date-fns";
+import {
+  Search,
+  BadgeCheck,
+  MessageSquareHeart,
+  CalendarCheck,
+  ArrowRight,
+  Star,
+  CalendarIcon,
+} from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SupplierCard } from "@/components/SupplierCard";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -12,7 +28,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 import { categories, suppliers, categoryImages } from "@/data/suppliers";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({

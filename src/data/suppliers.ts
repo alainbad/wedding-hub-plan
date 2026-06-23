@@ -63,6 +63,7 @@ export interface Supplier {
   about: string;
   services: string[];
   verified: boolean;
+  createdAt?: string;
 }
 
 export const suppliers: Supplier[] = [

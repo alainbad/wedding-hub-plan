@@ -84,6 +84,19 @@ function SuppliersPage() {
     return list;
   }, [allSuppliers, category, region, query, sort]);
 
+  const { newJoiners, popular } = useMemo(() => {
+    const THIRTY_DAYS = 1000 * 60 * 60 * 24 * 30;
+    const now = Date.now();
+    const isNew = (s: (typeof filtered)[number]) =>
+      s.createdAt ? now - new Date(s.createdAt).getTime() < THIRTY_DAYS : false;
+    const newOnes = filtered.filter(isNew);
+    const rest = filtered
+      .filter((s) => !isNew(s))
+      .slice()
+      .sort((a, b) => b.reviews - a.reviews || b.rating - a.rating);
+    return { newJoiners: newOnes, popular: rest };
+  }, [filtered]);
+
   const activeCategory = categories.find((c) => c.slug === category);
 
   return (
@@ -174,10 +187,38 @@ function SuppliersPage() {
       {/* Results */}
       <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
         {filtered.length > 0 ? (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((s) => (
-              <SupplierCard key={s.id} supplier={s} />
-            ))}
+          <div className="space-y-12">
+            {newJoiners.length > 0 && (
+              <div>
+                <div className="mb-5 flex items-center gap-3">
+                  <h2 className="font-serif text-2xl font-semibold text-foreground">New joiners</h2>
+                  <span className="rounded-full bg-accent/10 px-3 py-0.5 text-xs font-medium text-accent">
+                    Just joined
+                  </span>
+                </div>
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  {newJoiners.map((s) => (
+                    <SupplierCard key={s.id} supplier={s} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {popular.length > 0 && (
+              <div>
+                <div className="mb-5 flex items-center gap-3">
+                  <h2 className="font-serif text-2xl font-semibold text-foreground">Popular suppliers</h2>
+                  <span className="rounded-full bg-primary/10 px-3 py-0.5 text-xs font-medium text-primary">
+                    Most loved
+                  </span>
+                </div>
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  {popular.map((s) => (
+                    <SupplierCard key={s.id} supplier={s} />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border py-20 text-center">

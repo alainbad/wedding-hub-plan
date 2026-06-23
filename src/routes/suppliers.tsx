@@ -1,10 +1,13 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Search, SlidersHorizontal } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SupplierCard } from "@/components/SupplierCard";
 import { categories, suppliers, type CategorySlug } from "@/data/suppliers";
+import { supabase } from "@/integrations/supabase/client";
+import { adaptSupplier } from "@/lib/supplier-adapter";
 import { cn } from "@/lib/utils";
 
 interface SupplierSearch {

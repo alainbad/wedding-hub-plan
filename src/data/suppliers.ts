@@ -81,7 +81,21 @@ export const suppliers: Supplier[] = [
     tagline: "Cliff-top Mediterranean estate with sunset ceremonies",
     about:
       "A restored 19th-century stone villa perched above the Batroun coastline, Villa des Cèdres hosts intimate ceremonies and grand celebrations alike. Arched terraces, olive gardens and uninterrupted sea views make it one of Lebanon's most sought-after wedding settings.",
-    services: ["Up to 300 guests", "On-site catering kitchen", "Bridal suite", "Valet parking", "Indoor & outdoor options"],
+    services: [
+      "Up to 300 guests",
+      "On-site catering kitchen",
+      "Bridal suite",
+      "Valet parking",
+      "Indoor & outdoor options",
+      "Tables and chairs",
+      "DJ setup",
+      "Sound and lighting",
+      "Dancing stage",
+      "Bar",
+      "Welcome drink area",
+      "Photo booth",
+      "Entertainment",
+    ],
     verified: true,
   },
   {

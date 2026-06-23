@@ -74,14 +74,30 @@ function Home() {
   const [location, setLocation] = useState("");
   const [guests, setGuests] = useState("");
   const [venueType, setVenueType] = useState("");
-  const [cuisine, setCuisine] = useState("");
+  const [selectedCuisines, setSelectedCuisines] = useState<string[]>([]);
   const [date, setDate] = useState<Date>();
+
+  const cuisineOptions = [
+    "Lebanese",
+    "International",
+    "Italian",
+    "Fusion",
+    "Mexican",
+    "Mediterranean",
+    "French",
+  ];
+
+  const toggleCuisine = (option: string) => {
+    setSelectedCuisines((prev) =>
+      prev.includes(option) ? prev.filter((c) => c !== option) : [...prev, option]
+    );
+  };
 
   const filterSearch = {
     ...(location && { region: location }),
     ...(guests && { guests }),
     ...(venueType && { venueType }),
-    ...(cuisine && { cuisine }),
+    ...(selectedCuisines.length > 0 && { cuisine: selectedCuisines }),
     ...(date && { date: format(date, "yyyy-MM-dd") }),
   };
 

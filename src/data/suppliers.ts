@@ -16,6 +16,10 @@ export const categoryImages = {
   entertainment: entertainmentImg,
   beauty: beautyImg,
   cake: cakeImg,
+  carRentals: venueImg,
+  travelAccommodation: heroImg,
+  eventPlanners: cateringImg,
+  receptionOrganizers: entertainmentImg,
 };
 
 export type CategorySlug =

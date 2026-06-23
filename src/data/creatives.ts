@@ -77,6 +77,7 @@ export interface Creative {
   about: string;
   services: string[];
   verified: boolean;
+  whatsapp?: string;
   createdAt?: string;
 }
 

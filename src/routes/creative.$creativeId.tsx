@@ -14,6 +14,7 @@ import {
   Heart,
   Share2,
   CalendarIcon,
+  CalendarPlus,
   Send,
 } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -84,6 +85,15 @@ function isSameDay(a: Date, b: Date) {
 function creativeEmail(creative: Creative) {
   return `${creative.id}@weddinghub-lebanon.com`;
 }
+
+// Build a WhatsApp chat link to book an appointment with the creative.
+// Uses the creative's WhatsApp number when available, otherwise a demo line.
+function creativeWhatsAppLink(creative: Creative) {
+  const number = (creative.whatsapp || "+961 70 000 000").replace(/[^\d]/g, "");
+  const text = `Hello ${creative.name}, I'd like to book an appointment to discuss my wedding. Could we arrange a time?`;
+  return `https://wa.me/${number}?text=${encodeURIComponent(text)}`;
+}
+
 
 const cuisineOptions = [
   "Lebanese",
@@ -514,6 +524,14 @@ function CreativeDetail() {
             >
               <FileText className="h-4 w-4" /> Request a quote
             </button>
+            <a
+              href={creativeWhatsAppLink(creative)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-[#25D366]/90"
+            >
+              <CalendarPlus className="h-4 w-4" /> Book an appointment
+            </a>
             <div className="mt-3 flex gap-3">
               <button
                 type="button"

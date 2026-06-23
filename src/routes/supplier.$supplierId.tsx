@@ -87,11 +87,19 @@ function SupplierDetail() {
   const { supplierId } = Route.useParams();
   const supplier = getSupplier(supplierId);
 
+  const unavailableDates = useMemo(
+    () => getUnavailableDates(supplierId),
+    [supplierId],
+  );
+  const [availabilityOpen, setAvailabilityOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>();
+
   if (!supplier) return <SupplierNotFound />;
 
   const related = suppliers
     .filter((s) => s.category === supplier.category && s.id !== supplier.id)
     .slice(0, 3);
+
 
   return (
     <div className="min-h-screen bg-background">

@@ -40,7 +40,7 @@ export function SiteHeader() {
             to="/auth"
             className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
-            Creative login
+            Creatives login
           </Link>
           <Link
             to="/auth"
@@ -85,7 +85,7 @@ export function SiteHeader() {
             onClick={() => setOpen(false)}
             className="rounded-md px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           >
-            Creative login
+            Creatives login
           </Link>
           <Link
             to="/auth"

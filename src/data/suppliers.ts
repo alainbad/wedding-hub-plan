@@ -246,6 +246,7 @@ export const suppliers: Supplier[] = [
       "Cedar & Frames focuses on real, unposed moments. Ideal for couples who want a relaxed presence and a timeless, warm-toned gallery of their day.",
     services: ["8-hour coverage", "Edited gallery", "Print release", "Engagement add-on", "USB keepsake"],
     verified: false,
+    createdAt: daysAgo(11),
   },
 ];
 

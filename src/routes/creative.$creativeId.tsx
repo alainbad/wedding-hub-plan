@@ -237,6 +237,25 @@ function CreativeDetail() {
     .filter((s) => s.category === creative.category && s.id !== creative.id)
     .slice(0, 3);
 
+  const quoteFields: QuoteField[] = QUOTE_FIELDS_BY_CATEGORY[creative.category] ?? [];
+
+  const formatAnswer = (field: QuoteField): string => {
+    const value = answers[field.key];
+    if (Array.isArray(value)) return value.length ? value.join(", ") : "—";
+    if (field.type === "boolean") return value === "yes" ? "Yes" : value === "no" ? "No" : "—";
+    return value ? String(value) : "—";
+  };
+
+  // Pull a numeric guest count out of a "guests" field if the category has one.
+  const guestCountValue = (): number | null => {
+    const field = quoteFields.find((f) => f.key === "guests");
+    if (!field) return null;
+    const raw = answers.guests;
+    if (typeof raw !== "string" || !raw) return null;
+    const parsed = parseInt(raw, 10);
+    return Number.isNaN(parsed) ? null : parsed;
+  };
+
   const submitQuote = async () => {
     // For real (database-backed) creatives, store the inquiry as a lead so it
     // appears in the creative's dashboard inbox.
@@ -244,8 +263,7 @@ function CreativeDetail() {
       setSending(true);
       const messageText = [
         notes,
-        venueType ? `Venue type: ${venueType}` : "",
-        selectedCuisines.length ? `Cuisine: ${selectedCuisines.join(", ")}` : "",
+        ...quoteFields.map((f) => `${f.label}: ${formatAnswer(f)}`),
       ]
         .filter(Boolean)
         .join("\n");
@@ -255,7 +273,7 @@ function CreativeDetail() {
         email,
         phone,
         location,
-        guest_count: guests ? parseInt(guests, 10) || null : null,
+        guest_count: guestCountValue(),
         budget: "",
         message: messageText,
         event_date: weddingDate ? format(weddingDate, "yyyy-MM-dd") : null,
@@ -280,9 +298,7 @@ function CreativeDetail() {
       `• Email: ${email || "—"}`,
       `• Phone: ${phone || "—"}`,
       `• Location: ${location || "—"}`,
-      `• Number of guests: ${guests || "—"}`,
-      `• Venue type: ${venueType || "—"}`,
-      `• Catering cuisine: ${selectedCuisines.length ? selectedCuisines.join(", ") : "—"}`,
+      ...quoteFields.map((f) => `• ${f.label}: ${formatAnswer(f)}`),
       `• Wedding date: ${weddingDate ? format(weddingDate, "PPP") : "—"}`,
       "",
       "Additional notes:",
@@ -297,6 +313,7 @@ function CreativeDetail() {
     window.location.href = mailto;
     setQuoteOpen(false);
   };
+
 
   const submitReview = async () => {
     if (!dbId) return;

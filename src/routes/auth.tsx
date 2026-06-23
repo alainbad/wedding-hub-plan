@@ -123,48 +123,19 @@ function AuthPage() {
           </p>
         </div>
 
-        <Tabs defaultValue="signin">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="signin">Sign in</TabsTrigger>
-            <TabsTrigger value="signup">Create account</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="signin">
-            <form onSubmit={signIn} className="mt-4 space-y-4">
-              <div className="space-y-1.5">
-                <Label htmlFor="si-email">Email</Label>
-                <Input id="si-email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="si-password">Password</Label>
-                <Input id="si-password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
-              </div>
-              <Button type="submit" className="w-full" disabled={busy}>
-                {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : "Sign in"}
-              </Button>
-            </form>
-          </TabsContent>
-
-          <TabsContent value="signup">
-            <form onSubmit={signUp} className="mt-4 space-y-4">
-              <div className="space-y-1.5">
-                <Label htmlFor="su-company">Business name</Label>
-                <Input id="su-company" required value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder="e.g. Villa des Cèdres" />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="su-email">Email</Label>
-                <Input id="su-email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="su-password">Password</Label>
-                <Input id="su-password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 6 characters" />
-              </div>
-              <Button type="submit" className="w-full" disabled={busy}>
-                {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : "Create account"}
-              </Button>
-            </form>
-          </TabsContent>
-        </Tabs>
+        <form onSubmit={signIn} className="mt-4 space-y-4">
+          <div className="space-y-1.5">
+            <Label htmlFor="si-email">Email</Label>
+            <Input id="si-email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="si-password">Password</Label>
+            <Input id="si-password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+          </div>
+          <Button type="submit" className="w-full" disabled={busy}>
+            {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : "Sign in"}
+          </Button>
+        </form>
 
         <div className="my-5 flex items-center gap-3">
           <div className="h-px flex-1 bg-border" />
